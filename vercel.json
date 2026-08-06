@@ -1,5 +1,21 @@
 {
   "framework": null,
   "outputDirectory": ".",
-  "cleanUrls": true
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/about-us", "destination": "/about-us.html" },
+    { "source": "/contact", "destination": "/contact.html" },
+    { "source": "/faq", "destination": "/faq.html" },
+    { "source": "/how-it-works", "destination": "/how-it-works.html" },
+    { "source": "/blog", "destination": "/blog.html" },
+    { "source": "/blog/summer-sunglasses-for-women-2026", "destination": "/blog-summer-sunglasses-for-women-2026.html" },
+    { "source": "/blog/dita-flight-006-7806-sunglasses-buyers-guide", "destination": "/blog-dita-flight-006-7806-sunglasses-buyers-guide.html" },
+    { "source": "/blog/robert-downey-jr-sunglasses", "destination": "/blog-robert-downey-jr-sunglasses.html" },
+    { "source": "/collections/all", "destination": "/collections-all.html" },
+    { "source": "/collections/mens-sunglasses", "destination": "/collections-mens-sunglasses.html" },
+    { "source": "/collections/womens-sunglasses", "destination": "/collections-womens-sunglasses.html" },
+    { "source": "/collections/unisex-sunglasses", "destination": "/collections-unisex-sunglasses.html" },
+    { "source": "/products/:slug", "destination": "/products-:slug.html" }
+  ]
 }
