@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UV Index Checker &amp; Sunglasses Guide — All Star Shady</title>
+  <meta name="description" content="Check today's UV index for your city and find the perfect sunglasses. Free UV forecast, sun safety tips, and style recommendations.">
+  <meta name="canonical" href="https://allstarshady.com/uv-check/">
+  <meta property="og:title" content="UV Index Checker &amp; Sunglasses Guide">
+  <meta property="og:description" content="Check today's UV index and find the right sunglasses for the conditions.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://allstarshady.com/uv-check/">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .uv-page { padding: 40px 0 64px; }
+    .uv-hero { text-align: center; padding: 24px 0 40px; }
+    .uv-hero h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(28px, 4vw, 40px);
+      line-height: 1.2;
+      margin: 0 0 12px;
+    }
+    .uv-hero p {
+      color: var(--muted);
+      max-width: 560px;
+      margin: 0 auto;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+    .uv-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 720px;
+      margin: 0 auto 24px;
+      box-shadow: 0 4px 20px var(--shadow);
+    }
+    .search-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .search-row input[type="text"] {
+      flex: 1 1 220px;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+      font: inherit;
+      color: var(--ink);
+    }
+    .search-row input[type="text"]:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(201,134,42,0.12);
+    }
+    .search-row button {
+      padding: 12px 18px;
+      border: none;
+      border-radius: 8px;
+      background: var(--ink);
+      color: #fff;
+      font-weight: 500;
+      cursor: pointer;
+      font: inherit;
+    }
+    .search-row button:hover { background: #333; }
+    .search-row .ghost {
+      background: #fff;
+      color: var(--ink);
+      border: 1px solid var(--border);
+    }
+    .search-row .ghost:hover { border-color: var(--ink); }
+
+    .gauge-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      margin-top: 24px;
+    }
+    .gauge-ring {
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      position: relative;
+      background: conic-gradient(
+        #4ade80 0deg,
+        #facc15 90deg,
+        #f97316 180deg,
+        #ef4444 270deg,
+        #a855f7 360deg
+      );
+      box-shadow: 0 0 0 14px rgba(255,255,255,1);
+    }
+    .gauge-inner {
+      width: 170px;
+      height: 170px;
+      border-radius: 50%;
+      background: #fff;
+      display: grid;
+      place-items: center;
+      text-align: center;
+    }
+    .gauge-value {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 56px;
+      line-height: 1;
+      color: var(--ink);
+    }
+    .gauge-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .gauge-level {
+      font-weight: 600;
+      font-size: 14px;
+      margin-top: 6px;
+    }
+    .gauge-tip {
+      max-width: 480px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .recommendations {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .rec-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-top: 16px;
+    }
+    @media (min-width: 640px) {
+      .rec-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    .rec-card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+      text-align: center;
+      padding: 14px;
+    }
+    .rec-card .emoji { font-size: 28px; margin-bottom: 8px; }
+    .rec-card h4 {
+      font-size: 13px;
+      font-weight: 600;
+      margin: 0 0 4px;
+    }
+    .rec-card p {
+      font-size: 12px;
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.4;
+    }
+    .rec-card a {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--accent);
+    }
+    .tips {
+      max-width: 720px;
+      margin: 24px auto 0;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+    }
+    .tips h3 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 18px;
+      margin: 0 0 10px;
+    }
+    .tips ul {
+      margin: 0;
+      padding-left: 18px;
+      color: #3a3a3a;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+    .tips li { margin-bottom: 6px; }
+    .saved-city {
+      max-width: 720px;
+      margin: 0 auto 12px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .saved-city span {
+      color: var(--ink);
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    .error {
+      color: #ef4444;
+      font-size: 13px;
+      text-align: center;
+      margin-top: 10px;
+    }
+    .muted {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="announcement">Free Shipping on Eligible U.S. Orders • 30-Day Returns</div>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="logo" href="/" aria-label="All Star Shady home">
+        <span class="logo-mark">AS</span>
+        <span class="logo-text">All Star Shady</span>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="/collections/all/">Shop</a>
+        <a href="/collections/mens-sunglasses/">Men</a>
+        <a href="/collections/womens-sunglasses/">Women</a>
+        <a href="/collections/unisex-sunglasses/">Unisex</a>
+        <a href="/about-us/">About</a>
+        <a href="/blog/">Journal</a>
+        <a href="/faq/">FAQ</a>
+        <a href="/contact/">Contact</a>
+        <a href="/uv-check/">UV Check</a>
+      </nav>
+      <div class="header-actions">
+        <a class="cart-btn" href="/collections/all/">Cart (0)</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="uv-page">
+    <section class="uv-hero">
+      <div class="container">
+        <h1>UV Index &amp; Sunglasses Guide</h1>
+        <p>Look up today's UV forecast for any city and get a quick recommendation on the right shades for the conditions.</p>
+      </div>
+    </section>
+
+    <section class="container">
+      <div class="uv-card">
+        <div class="search-row">
+          <input type="text" id="cityInput" placeholder="Enter a city (e.g. Portland, OR)" aria-label="City name">
+          <button id="searchBtn">Check UV</button>
+          <button id="geoBtn" class="ghost" title="Use my location">📍 My Location</button>
+        </div>
+        <div id="result" style="margin-top:18px;"></div>
+      </div>
+    </section>
+
+    <section class="container recommendations" id="recommendations" style="display:none;">
+      <h2 style="font-family:'Playfair Display',Georgia,serif; font-size:clamp(22px,3vw,28px); margin:0 0 4px;">Recommended for today</h2>
+      <p style="color:var(--muted); font-size:13px; margin:0 0 8px;">Based on UV intensity and typical activities right now.</p>
+      <div class="rec-grid" id="recGrid"></div>
+    </section>
+
+    <section class="container tips" id="tips" style="display:none;">
+      <h3>Sun safety tips</h3>
+      <ul id="tipsList"></ul>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-col">
+        <strong>Shop</strong>
+        <a href="/collections/all/">All sunglasses</a>
+        <a href="/collections/mens-sunglasses/">Men</a>
+        <a href="/collections/womens-sunglasses/">Women</a>
+        <a href="/collections/unisex-sunglasses/">Unisex</a>
+      </div>
+      <div class="footer-col">
+        <strong>Support</strong>
+        <a href="/faq/">FAQ</a>
+        <a href="/policies/shipping-policy">Shipping</a>
+        <a href="/policies/refund-policy">Returns</a>
+        <a href="/contact/">Contact</a>
+      </div>
+      <div class="footer-col">
+        <strong>Company</strong>
+        <a href="/about-us/">About</a>
+        <a href="/blog/">Journal</a>
+        <a href="/contact/">Contact</a>
+      </div>
+      <div class="footer-col">
+        <strong>Contact</strong>
+        <a href="tel:+15032139578">+1 503 213 9578</a>
+        <a href="mailto:support@allstarshady.com">support@allstarshady.com</a>
+        <p>7337 SE 28th Ave<br>Portland, OR 97202</p>
+      </div>
+    </div>
+    <div class="container legal">
+      <p>&copy; <span id="year"></span> All Star Shady. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    const el = (id) => document.getElementById(id);
+
+    function setYear() { el('year').textContent = new Date().getFullYear(); }
+    setYear();
+
+    function getUVColor(value) {
+      if (value <= 2) return '#4ade80';
+      if (value <= 5) return '#facc15';
+      if (value <= 7) return '#f97316';
+      if (value <= 10) return '#ef4444';
+      return '#a855f7';
+    }
+    function getUVLabel(value) {
+      if (value <= 2) return 'Low';
+      if (value <= 5) return 'Moderate';
+      if (value <= 7) return 'High';
+      if (value <= 10) return 'Very High';
+      return 'Extreme';
+    }
+    function getUVRotation(value) {
+      const capped = Math.min(value, 15);
+      return (capped / 15) * 360;
+    }
+
+    function getTips(value) {
+      const tips = [];
+      if (value >= 8) {
+        tips.push('Stay indoors during midday hours if possible.');
+        tips.push('Apply broad-spectrum SPF 50+ every 2 hours.');
+        tips.push('Wear a wide-brimmed hat and UV-blocking clothing.');
+      } else if (value >= 6) {
+        tips.push('Use SPF 30+ and reapply every 2 hours outdoors.');
+        tips.push('Seek shade during midday hours.');
+      } else if (value >= 3) {
+        tips.push('Apply SPF 15+ on exposed skin.');
+        tips.push('Sunglasses are recommended, especially on reflective surfaces.');
+      } else {
+        tips.push('Low UV today — still fun to wear your favorite shades.');
+        tips.push('Light sunscreen is enough if you\'re out long.');
+      }
+      if (value >= 2) {
+        tips.push('Wrap-around frames help block side glare.');
+      }
+      return tips;
+    }
+
+    function getRecommendations(value, hour) {
+      const recs = [];
+      if (value >= 8) {
+        recs.push({
+          emoji: '🛡️',
+          title: 'Max Polarization',
+          text: 'Extra-dark polarized lenses for extreme glare.',
+          link: '/products/mens-polarized-aviator-sunglasses-lightweight-metal-frame-uv400-pc-lenses-all-day-comfort-aerolux/'
+        });
+      } else if (value >= 5) {
+        recs.push({
+          emoji: '😎',
+          title: 'Polarized Sport',
+          text: 'Great for driving and outdoor activities.',
+          link: '/products/unisex-polarized-sunglasses-lightweight-frame-uv400-lenses-sport-driving-ready-altivo'
+        });
+      } else {
+        recs.push({
+          emoji: '🌸',
+          title: 'Everyday Fashion',
+          text: 'Lightweight styles for casual wear.',
+          link: '/products/womens-vintage-cat-eye-sunglasses-lightweight-composite-frame-uv-protection-casual-formal-everyday-wear-rosevex'
+        });
+      }
+      if (hour >= 10 && hour <= 16) {
+        recs.push({
+          emoji: '👒',
+          title: 'Peak Hours',
+          text: 'Midday sun is strongest — full coverage recommended.',
+          link: '/collections/all/'
+        });
+      } else {
+        recs.push({
+          emoji: '🌅',
+          title: 'Golden Hours',
+          text: 'Morning/evening light is softer — go with lighter tints.',
+          link: '/collections/unisex-sunglasses/'
+        });
+      }
+      if (value >= 4) {
+        recs.push({
+          emoji: '👓',
+          title: 'Full Frame Coverage',
+          text: 'Wrap or oversized frames block more side rays.',
+          link: '/collections/mens-sunglasses/'
+        });
+      }
+      recs.push({
+        emoji: '🕶️',
+        title: 'Shop All',
+        text: 'Browse the full collection.',
+        link: '/collections/all/'
+      });
+      return recs;
+    }
+
+    function renderResult(value, city, hour) {
+      const color = getUVColor(value);
+      const label = getUVLabel(value);
+      const rotation = getUVRotation(value);
+      const tips = getTips(value);
+      const recs = getRecommendations(value, hour);
+
+      const result = el('result');
+      result.innerHTML = `
+        <div style="font-size:13px; color:var(--muted); text-align:center; margin-bottom:6px;">Daily max UV forecast for <strong style="color:var(--ink);">${city}</strong></div>
+        <div class="gauge-wrap">
+          <div class="gauge-ring" style="background: conic-gradient(${color} 0deg, ${color} ${rotation}deg, #e5e7eb ${rotation}deg, #e5e7eb 360deg);">
+            <div class="gauge-inner">
+              <div>
+                <div class="gauge-value">${value.toFixed(1)}</div>
+                <div class="gauge-label">UV Index</div>
+                <div class="gauge-level" style="color:${color};">${label}</div>
+              </div>
+            </div>
+          </div>
+          <div class="gauge-tip">
+            UV index scale: 0–2 Low · 3–5 Moderate · 6–7 High · 8–10 Very High · 11+ Extreme.<br>
+            Forecast updated from Open-Meteo.
+          </div>
+        </div>
+      `;
+
+      const recSection = el('recommendations');
+      const recGrid = el('recGrid');
+      recGrid.innerHTML = recs.map(r => `
+        <div class="rec-card">
+          <div class="emoji">${r.emoji}</div>
+          <h4>${r.title}</h4>
+          <p>${r.text}</p>
+          <a href="${r.link}">See styles →</a>
+        </div>
+      `).join('');
+      recSection.style.display = '';
+
+      const tipSection = el('tips');
+      const tipList = el('tipsList');
+      tipList.innerHTML = tips.map(t => `<li>${t}</li>`).join('');
+      tipSection.style.display = '';
+    }
+
+    async function geocode(city) {
+      const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`;
+      const r = await fetch(url);
+      const data = await r.json();
+      if (!data.results || !data.results.length) {
+        throw new Error('City not found');
+      }
+      return { lat: data.results[0].latitude, lng: data.results[0].longitude, name: data.results[0].name + (data.results[0].admin1 ? ', ' + data.results[0].admin1 : '') };
+    }
+
+    async function fetchUV(lat, lng) {
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&daily=uv_index_max&timezone=auto&forecast_days=1`;
+      const r = await fetch(url);
+      const data = await r.json();
+      if (!data.daily || !data.daily.uv_index_max || !data.daily.uv_index_max.length) {
+        throw new Error('UV data not available');
+      }
+      return data.daily.uv_index_max[0];
+    }
+
+    async function searchUV(city) {
+      const result = el('result');
+      result.innerHTML = '<div class="muted">Looking up location and UV forecast...</div>';
+      try {
+        const geo = await geocode(city);
+        const uv = await fetchUV(geo.lat, geo.lng);
+        const hour = new Date().getHours();
+        renderResult(uv, geo.name, hour);
+      } catch (err) {
+        result.innerHTML = `<div class="error">${err.message || 'Something went wrong. Please try again.'}</div>`;
+      }
+    }
+
+    el('searchBtn').addEventListener('click', () => {
+      const city = el('cityInput').value.trim();
+      if (city) searchUV(city);
+    });
+
+    el('cityInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const city = el('cityInput').value.trim();
+        if (city) searchUV(city);
+      }
+    });
+
+    el('geoBtn').addEventListener('click', () => {
+      if (!navigator.geolocation) {
+        el('result').innerHTML = '<div class="error">Geolocation is not supported by your browser.</div>';
+        return;
+      }
+      el('result').innerHTML = '<div class="muted">Detecting your location...</div>';
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+        try {
+          const uv = await fetchUV(pos.coords.latitude, pos.coords.longitude);
+          const name = `${pos.coords.latitude.toFixed(2)}, ${pos.coords.longitude.toFixed(2)}`;
+          const hour = new Date().getHours();
+          renderResult(uv, name, hour);
+        } catch (err) {
+          el('result').innerHTML = `<div class="error">${err.message || 'Something went wrong.'}</div>`;
+        }
+      }, () => {
+        el('result').innerHTML = '<div class="error">Location access denied. Please enter a city instead.</div>';
+      });
+    });
+
+    // Default city suggestion from localStorage
+    const lastCity = localStorage.getItem('uv_check_city');
+    if (lastCity) {
+      el('cityInput').placeholder = `Last checked: ${lastCity} — press Check or hit Enter`;
+    }
+  </script>
+</body>
+</html>
