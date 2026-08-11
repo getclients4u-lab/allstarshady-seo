@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Frame Finder — Find Your Perfect Sunglasses | All Star Shady</title>
+  <meta name="description" content="Take our 60-second Frame Finder quiz to discover the perfect sunglasses for your face shape, style, and lifestyle. Free shipping, 30-day returns.">
+  <meta property="og:title" content="Frame Finder — Find Your Perfect Sunglasses">
+  <meta property="og:description" content="Answer 4 quick questions and we'll match you with your ideal frame.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://allstarshady.com/style-finder/">
+  <link rel="canonical" href="https://allstarshady.com/style-finder/">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .ff-page {
+      min-height: calc(100vh - 72px);
+      display: flex;
+      flex-direction: column;
+    }
+    .ff-hero {
+      text-align: center;
+      padding: 48px 24px 32px;
+    }
+    .ff-hero h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 700;
+      color: var(--ink);
+      margin: 0 0 12px;
+      line-height: 1.15;
+    }
+    .ff-hero p {
+      color: var(--muted);
+      font-size: 15px;
+      max-width: 520px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .quiz-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 24px 64px;
+    }
+    .quiz-card {
+      width: 100%;
+      max-width: 680px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 32px;
+      box-shadow: 0 8px 30px var(--shadow);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 5px;
+      background: var(--border);
+      border-radius: 4px;
+      margin-bottom: 28px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--steel));
+      border-radius: 4px;
+      transition: width 0.45s ease;
+    }
+    .step-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    .question-text {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(20px, 2.8vw, 26px);
+      font-weight: 600;
+      color: var(--ink);
+      margin: 0 0 24px;
+      line-height: 1.25;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 520px) {
+      .options-grid { grid-template-columns: 1fr; }
+    }
+    .option-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 20px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      cursor: pointer;
+      transition: all 0.22s ease;
+      font-family: 'Inter', system-ui, sans-serif;
+      color: var(--ink);
+    }
+    .option-btn:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(201,134,42,0.12);
+    }
+    .option-btn.selected {
+      border-color: var(--accent);
+      background: rgba(201,134,42,0.05);
+      box-shadow: 0 0 0 3px rgba(201,134,42,0.1);
+    }
+    .option-emoji {
+      font-size: 32px;
+      line-height: 1;
+    }
+    .option-label {
+      font-size: 14px;
+      font-weight: 500;
+      text-align: center;
+      line-height: 1.3;
+    }
+    .option-sub {
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    .quiz-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 24px;
+      gap: 12px;
+    }
+    .quiz-nav .btn {
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      border: none;
+      font-family: 'Inter', system-ui, sans-serif;
+      transition: all 0.2s ease;
+    }
+    .btn-back {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border) !important;
+    }
+    .btn-back:hover { border-color: var(--ink) !important; color: var(--ink); }
+    .btn-next {
+      background: var(--ink);
+      color: #fff;
+      margin-left: auto;
+    }
+    .btn-next:hover { background: #333; }
+    .btn-next:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* Result screen */
+    .result-screen {
+      display: none;
+      text-align: center;
+    }
+    .result-screen.show { display: block; }
+    .result-emoji {
+      font-size: 64px;
+      margin-bottom: 16px;
+      animation: float 2.5s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .result-match {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .result-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(22px, 3vw, 30px);
+      font-weight: 700;
+      color: var(--ink);
+      margin: 0 0 10px;
+    }
+    .result-desc {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.6;
+      max-width: 480px;
+      margin: 0 auto 24px;
+    }
+    .result-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+    .result-actions .btn {
+      padding: 14px 28px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      border: none;
+      font-family: 'Inter', system-ui, sans-serif;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-primary-sm { background: var(--ink); color: #fff; }
+    .btn-primary-sm:hover { background: #333; }
+    .btn-secondary-sm {
+      background: transparent;
+      color: var(--ink);
+      border: 1.5px solid var(--border) !important;
+    }
+    .btn-secondary-sm:hover { border-color: var(--ink) !important; }
+
+    .alt-picks {
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: left;
+    }
+    .alt-picks h4 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 18px;
+      margin: 0 0 14px;
+      color: var(--ink);
+    }
+    .alt-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .alt-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      text-decoration: none;
+      color: var(--ink);
+      transition: border-color 0.2s ease;
+    }
+    .alt-item:hover { border-color: var(--accent); }
+    .alt-emoji { font-size: 22px; flex-shrink: 0; }
+    .alt-text { flex: 1; }
+    .alt-text strong { font-size: 13px; display: block; }
+    .alt-text span { font-size: 12px; color: var(--muted); }
+    .alt-arrow { color: var(--accent); font-weight: 600; font-size: 14px; }
+
+    .hidden { display: none !important; }
+    .fade-out {
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+    .fade-in {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    @media (max-width: 768px) {
+      .quiz-card { padding: 24px 18px; }
+      .ff-hero { padding: 36px 20px 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="announcement">Free Shipping on Eligible U.S. Orders • 30-Day Returns</div>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="logo" href="/" aria-label="All Star Shady home">
+        <span class="logo-mark">AS</span>
+        <span class="logo-text">All Star Shady</span>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="/collections/all/">Shop</a>
+        <a href="/collections/mens-sunglasses/">Men</a>
+        <a href="/collections/womens-sunglasses/">Women</a>
+        <a href="/collections/unisex-sunglasses/">Unisex</a>
+        <a href="/about-us/">About</a>
+        <a href="/blog/">Journal</a>
+        <a href="/faq/">FAQ</a>
+        <a href="/contact/">Contact</a>
+        <a href="/uv-check/">UV Check</a>
+      </nav>
+      <div class="header-actions">
+        <a class="cart-btn" href="/collections/all/">Cart (0)</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="ff-page">
+    <section class="ff-hero">
+      <div class="container">
+        <h1>Find Your Perfect Frame</h1>
+        <p>Answer four quick questions and we'll match you with a pair that fits your face, your vibe, and your life.</p>
+      </div>
+    </section>
+
+    <div class="quiz-wrap">
+      <div class="quiz-card" id="quizCard">
+
+        <!-- Quiz state -->
+        <div id="quizState">
+          <div class="step-label" id="stepLabel">Step 1 of 4</div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 25%;"></div>
+          </div>
+          <p class="question-text" id="questionText"></p>
+          <div class="options-grid" id="optionsGrid"></div>
+          <div class="quiz-nav">
+            <button class="btn btn-back hidden" id="backBtn" onclick="goBack()">← Back</button>
+            <button class="btn btn-next" id="nextBtn" onclick="goNext()" disabled>Next →</button>
+          </div>
+        </div>
+
+        <!-- Result -->
+        <div class="result-screen" id="resultScreen">
+          <div class="result-emoji" id="resultEmoji">🕶️</div>
+          <div class="result-match">Your perfect match</div>
+          <h2 class="result-title" id="resultTitle"></h2>
+          <p class="result-desc" id="resultDesc"></p>
+          <div class="result-actions">
+            <a class="btn btn-primary-sm" id="resultLink" href="#">Shop This Style →</a>
+            <button class="btn btn-secondary-sm" onclick="restartQuiz()">↻ Retake Quiz</button>
+          </div>
+          <div class="alt-picks" id="altPicks"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-col">
+        <strong>Shop</strong>
+        <a href="/collections/all/">All sunglasses</a>
+        <a href="/collections/mens-sunglasses/">Men</a>
+        <a href="/collections/womens-sunglasses/">Women</a>
+        <a href="/collections/unisex-sunglasses/">Unisex</a>
+      </div>
+      <div class="footer-col">
+        <strong>Tools</strong>
+        <a href="/style-finder/">Frame Finder</a>
+        <a href="/uv-check/">UV Check</a>
+        <a href="/faq/">FAQ</a>
+      </div>
+      <div class="footer-col">
+        <strong>Company</strong>
+        <a href="/about-us/">About</a>
+        <a href="/blog/">Journal</a>
+        <a href="/contact/">Contact</a>
+      </div>
+      <div class="footer-col">
+        <strong>Contact</strong>
+        <a href="tel:+15032139578">+1 503 213 9578</a>
+        <a href="mailto:support@allstarshady.com">support@allstarshady.com</a>
+        <p>7337 SE 28th Ave<br>Portland, OR 97202</p>
+      </div>
+    </div>
+    <div class="container legal">
+      <p>© <span id="year"></span> All Star Shady. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // ── Quiz data ──────────────────────────────────────────────
+    const questions = [
+      {
+        id: 'faceShape',
+        text: 'What\'s your face shape?',
+        options: [
+          { emoji: '⬭', label: 'Oval', sub: 'Balanced proportions, slightly wider at cheekbones', value: 'oval' },
+          { emoji: '⬛', label: 'Round', sub: 'Soft curves, similar width and length', value: 'round' },
+          { emoji: '🟧', label: 'Square', sub: 'Strong jawline, angular features', value: 'square' },
+          { emoji: '🔺', label: 'Heart', sub: 'Wider forehead, tapered chin', value: 'heart' },
+          { emoji: '📐', label: 'Long / Diamond', sub: 'Narrow chin, prominent cheekbones', value: 'diamond' },
+        ]
+      },
+      {
+        id: 'styleVibe',
+        text: 'Which style speaks to you?',
+        options: [
+          { emoji: '✈️', label: 'Classic Aviator', sub: 'Timeless, sporty, iconic', value: 'aviator' },
+          { emoji: '🖤', label: 'Wayfarer', sub: 'Bold, retro, confident', value: 'wayfarer' },
+          { emoji: '👁️', label: 'Cat-Eye', sub: 'Feminine, playful, retro-chic', value: 'cateye' },
+          { emoji: '🔲', label: 'Rectangle', sub: 'Sharp, modern, minimal', value: 'rectangle' },
+          { emoji: '⭕', label: 'Round', sub: 'Vintage, artsy, relaxed', value: 'round_shade' },
+        ]
+      },
+      {
+        id: 'primaryUse',
+        text: 'Where will you wear them most?',
+        options: [
+          { emoji: '🚗', label: 'Driving', sub: 'Polarized for road glare', value: 'driving' },
+          { emoji: '🏖️', label: 'Beach / Vacation', sub: 'Full UV coverage, stylish', value: 'beach' },
+          { emoji: '🏃', label: 'Sports / Outdoors', sub: 'Lightweight, wrap-around', value: 'sports' },
+          { emoji: '🏙️', label: 'City / Everyday', sub: 'Fashion-forward, comfortable', value: 'city' },
+        ]
+      },
+      {
+        id: 'tone',
+        text: 'Which color family do you gravitate toward?',
+        options: [
+          { emoji: '🖤', label: 'Classic Black', sub: 'Versatile, goes with everything', value: 'black' },
+          { emoji: '🤎', label: 'Tortoise / Warm', sub: 'Rich browns and amber tones', value: 'tortoise' },
+          { emoji: '🥈', label: 'Silver / Metal', sub: 'Cool, sleek, lightweight', value: 'metal' },
+          { emoji: '🌈', label: 'Mirrored / Bold', sub: 'Fun lenses, statement frames', value: 'mirror' },
+        ]
+      }
+    ];
+
+    // ── Recommendation matrix ──────────────────────────────────
+    // Maps face shape → best style choices with product links
+    const faceMap = {
+      oval: [
+        { emoji: '✈️', name: 'Aviator', why: 'Oval faces can pull off almost any shape — aviators are a natural classic.', link: '/products/mens-polarized-aviator-sunglasses-lightweight-metal-frame-uv400-pc-lenses-all-day-comfort-aerolux/', tag: 'AeroLux Aviator' },
+        { emoji: '🖤', name: 'Wayfarer', why: 'The angular wayfarer balances your soft curves perfectly.', link: '/collections/all/', tag: 'Shop Wayfarers' },
+        { emoji: '🔲', name: 'Rectangle', why: 'Clean lines complement your balanced proportions.', link: '/collections/unisex-sunglasses/', tag: 'Shop Rectangles' },
+      ],
+      round: [
+        { emoji: '🖤', name: 'Wayfarer', why: 'Angular frames add structure and definition to soft round features.', link: '/collections/all/', tag: 'Shop Wayfarers' },
+        { emoji: '🔲', name: 'Rectangle', why: 'Sharp corners create the contrast your face shape needs.', link: '/collections/unisex-sunglasses/', tag: 'Shop Rectangles' },
+        { emoji: '✈️', name: 'Aviator', why: 'The teardrop shape elongates and adds dimension.', link: '/products/mens-polarized-aviator-sunglasses-lightweight-metal-frame-uv400-pc-lenses-all-day-comfort-aerolux/', tag: 'AeroLux Aviator' },
+      ],
+      square: [
+        { emoji: '⭕', name: 'Round', why: 'Round frames soften your strong jawline for a balanced look.', link: '/collections/all/', tag: 'Shop Rounds' },
+        { emoji: '👁️', name: 'Cat-Eye', why: 'Upswept lines add femininity and contrast to angular features.', link: '/products/womens-vintage-cat-eye-sunglasses-lightweight-composite-frame-uv-protection-casual-formal-everyday-wear-rosevex', tag: 'Rosevex Cat-Eye' },
+        { emoji: '✈️', name: 'Aviator', why: 'The curved top bar breaks up strong horizontal lines.', link: '/products/mens-polarized-aviator-sunglasses-lightweight-metal-frame-uv400-pc-lenses-all-day-comfort-aerolux/', tag: 'AeroLux Aviator' },
+      ],
+      heart: [
+        { emoji: '👁️', name: 'Cat-Eye', why: 'Upturned corners balance a wider forehead — made for you.', link: '/products/womens-vintage-cat-eye-sunglasses-lightweight-composite-frame-uv-protection-casual-formal-everyday-wear-rosevex', tag: 'Rosevex Cat-Eye' },
+        { emoji: '⭕', name: 'Round', why: 'Rounded shapes draw attention down and soften the top-heavy look.', link: '/collections/all/', tag: 'Shop Rounds' },
+        { emoji: '✈️', name: 'Aviator', why: 'Classic shape that gently narrows without harsh angles.', link: '/products/mens-polarized-aviator-sunglasses-lightweight-metal-frame-uv400-pc-lenses-all-day-comfort-aerolux/', tag: 'AeroLux Aviator' },
+      ],
+      diamond: [
+        { emoji: '👁️', name: 'Cat-Eye', why: 'Bold top lines add width to balance a narrow forehead.', link: '/products/womens-vintage-cat-eye-sunglasses-lightweight-composite-frame-uv-protection-casual-formal-everyday-wear-rosevex', tag: 'Rosevex Cat-Eye' },
+        { emoji: '🖤', name: 'Wayfarer', why: 'Solid frames add visual weight to balance high cheekbones.', link: '/collections/all/', tag: 'Shop Wayfarers' },
+        { emoji: '🔲', name: 'Rectangle', why: 'Horizontal lines add the width you want across the top.', link: '/collections/unisex-sunglasses/', tag: 'Shop Rectangles' },
+      ],
+    };
+
+    const useMap = {
+      driving: { tag: 'Polarized', emoji: '🚗', note: 'Polarized lenses cut road glare and reduce eye strain on long drives.' },
+      beach:   { tag: 'Full UV400', emoji: '🏖️', note: 'Wrap or oversized styles give maximum coverage when you need it most.' },
+      sports:  { tag: 'Sport / Wrap', emoji: '🏃', note: 'Lightweight, grip-fit frames that stay put during activity.' },
+      city:    { tag: 'Fashion', emoji: '🏙️', note: 'Look sharp without trying — lightweight frames for daily wear.' },
+    };
+
+    // ── State ──────────────────────────────────────────────────
+    let currentStep = 0;
+    let answers = {};
+    let selectedVal = null;
+
+    const stepLabel = document.getElementById('stepLabel');
+    const progressFill = document.getElementById('progressFill');
+    const questionText = document.getElementById('questionText');
+    const optionsGrid = document.getElementById('optionsGrid');
+    const backBtn = document.getElementById('backBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const quizState = document.getElementById('quizState');
+    const resultScreen = document.getElementById('resultScreen');
+
+    function renderStep() {
+      const q = questions[currentStep];
+      stepLabel.textContent = `Step ${currentStep + 1} of ${questions.length}`;
+      progressFill.style.width = ((currentStep + 1) / questions.length * 100) + '%';
+      questionText.textContent = q.text;
+      selectedVal = answers[q.id] || null;
+
+      optionsGrid.innerHTML = q.options.map(opt => `
+        <button class="option-btn ${selectedVal === opt.value ? 'selected' : ''}"
+                onclick="selectOption('${opt.value}', this)">
+          <span class="option-emoji">${opt.emoji}</span>
+          <span class="option-label">${opt.label}</span>
+          <span class="option-sub">${opt.sub}</span>
+        </button>
+      `).join('');
+
+      backBtn.classList.toggle('hidden', currentStep === 0);
+      nextBtn.textContent = currentStep === questions.length - 1 ? 'See My Match →' : 'Next →';
+      nextBtn.disabled = !selectedVal;
+    }
+
+    window.selectOption = function(val, btn) {
+      selectedVal = val;
+      answers[questions[currentStep].id] = val;
+      document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      nextBtn.disabled = false;
+    };
+
+    window.goNext = function() {
+      if (!selectedVal) return;
+      if (currentStep < questions.length - 1) {
+        currentStep++;
+        renderStep();
+      } else {
+        showResult();
+      }
+    };
+
+    window.goBack = function() {
+      if (currentStep > 0) {
+        currentStep--;
+        renderStep();
+      }
+    };
+
+    window.restartQuiz = function() {
+      currentStep = 0;
+      answers = {};
+      selectedVal = null;
+      quizState.style.display = '';
+      resultScreen.classList.remove('show');
+      renderStep();
+    };
+
+    function showResult() {
+      const face = answers.faceShape || 'oval';
+      const use = answers.primaryUse || 'city';
+      const picks = faceMap[face] || faceMap.oval;
+      const useInfo = useMap[use] || useMap.city;
+
+      const top = picks[0];
+
+      document.getElementById('resultEmoji').textContent = top.emoji;
+      document.getElementById('resultTitle').textContent = top.name;
+      document.getElementById('resultDesc').innerHTML =
+        `<strong>Why it works for you:</strong> ${top.why}<br><br>` +
+        `<span style="font-size:13px; color: var(--muted);">${useInfo.emoji} ${useInfo.note}</span>`;
+
+      const resultLink = document.getElementById('resultLink');
+      resultLink.href = top.link;
+      resultLink.textContent = `Shop ${top.tag} →`;
+
+      // Alt picks
+      const altHtml = picks.slice(1).map(p => `
+        <a class="alt-item" href="${p.link}">
+          <span class="alt-emoji">${p.emoji}</span>
+          <span class="alt-text">
+            <strong>${p.name}</strong>
+            <span>${p.why}</span>
+          </span>
+          <span class="alt-arrow">→</span>
+        </a>
+      `).join('');
+      document.getElementById('altPicks').innerHTML = altHtml ? `
+        <h4>Also great for your shape</h4>
+        <div class="alt-list">${altHtml}</div>
+      ` : '';
+
+      quizState.style.display = 'none';
+      resultScreen.classList.add('show');
+    }
+
+    // Init
+    renderStep();
+  </script>
+</body>
+</html>
