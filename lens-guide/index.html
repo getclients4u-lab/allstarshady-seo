@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lens Color Guide — Find Your Perfect Tint | All Star Shady</title>
+  <meta name="description" content="Interactive guide to sunglass lens colors: what each tint does, which activity matches which lens, and how polarized options compare. Free shipping on all orders.">
+  <meta property="og:title" content="Lens Color Guide — Find Your Perfect Tint">
+  <meta property="og:description" content="Gray, brown, green, rose, blue — which lens color is right for your lifestyle? Explore our interactive guide.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://allstarshady.com/lens-guide/">
+  <link rel="canonical" href="https://allstarshady.com/lens-guide/">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .lg-page {
+      min-height: calc(100vh - 72px);
+    }
+    .lg-hero {
+      text-align: center;
+      padding: 48px 24px 32px;
+      background: linear-gradient(180deg, #f8f7f5 0%, #fff 100%);
+    }
+    .lg-hero h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 700;
+      color: var(--ink);
+      margin: 0 0 12px;
+      line-height: 1.15;
+    }
+    .lg-hero p {
+      color: var(--muted);
+      font-size: 15px;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* Activity Picker */
+    .activity-picker {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 24px 24px 0;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .activity-btn {
+      padding: 10px 18px;
+      border: 1.5px solid var(--border);
+      border-radius: 100px;
+      background: #fff;
+      cursor: pointer;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink);
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .activity-btn:hover {
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+    .activity-btn.active {
+      background: var(--ink);
+      color: #fff;
+      border-color: var(--ink);
+    }
+
+    /* Demo Area */
+    .demo-wrap {
+      max-width: 1000px;
+      margin: 32px auto 0;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 760px) {
+      .demo-wrap { grid-template-columns: 1fr; }
+    }
+    .lens-visual {
+      position: relative;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      aspect-ratio: 4/3;
+      background: #e5e5e5;
+    }
+    .lens-visual img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: filter 0.6s ease;
+    }
+    .lens-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 20px;
+      background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .lens-overlay .lens-name {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 24px;
+      font-weight: 700;
+    }
+    .lens-overlay .lens-hex {
+      font-size: 12px;
+      opacity: 0.85;
+      font-family: monospace;
+    }
+    .lens-panel {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      box-shadow: 0 4px 20px var(--shadow);
+    }
+    .lens-panel h3 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 20px;
+      margin: 0 0 8px;
+    }
+    .lens-panel .tag {
+      display: inline-block;
+      padding: 4px 10px;
+      background: rgba(201,134,42,0.1);
+      color: var(--accent);
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 14px;
+    }
+    .lens-panel p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+      margin: 0 0 16px;
+    }
+    .lens-panel ul {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 20px;
+    }
+    .lens-panel ul li {
+      padding: 6px 0;
+      font-size: 13px;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .lens-panel ul li::before {
+      content: "✓";
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    /* Lens Library */
+    .lens-library {
+      max-width: 1100px;
+      margin: 56px auto 0;
+      padding: 0 24px;
+    }
+    .lens-library h2 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(24px, 3.5vw, 32px);
+      margin: 0 0 8px;
+      text-align: center;
+    }
+    .lens-library .sub {
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 32px;
+    }
+    .lens-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    .lens-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      background: #fff;
+    }
+    .lens-card:hover {
+      box-shadow: 0 8px 28px var(--shadow);
+      transform: translateY(-3px);
+    }
+    .lens-swatch {
+      height: 120px;
+      position: relative;
+      overflow: hidden;
+    }
+    .lens-swatch img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: filter 0.5s ease;
+    }
+    .lens-swatch .swatch-label {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      background: rgba(0,0,0,0.65);
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .lens-card-body {
+      padding: 14px;
+    }
+    .lens-card-body h4 {
+      margin: 0 0 4px;
+      font-size: 15px;
+    }
+    .lens-card-body p {
+      margin: 0;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* CTA */
+    .lg-cta {
+      max-width: 700px;
+      margin: 56px auto;
+      padding: 40px 24px;
+      text-align: center;
+      background: #f8f7f5;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+    }
+    .lg-cta h2 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 28px;
+      margin: 0 0 10px;
+    }
+    .lg-cta p {
+      color: var(--muted);
+      margin: 0 0 20px;
+      font-size: 14px;
+    }
+
+    .comparison-section {
+      max-width: 900px;
+      margin: 56px auto 0;
+      padding: 0 24px;
+    }
+    .comparison-section h2 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(24px, 3.5vw, 32px);
+      margin: 0 0 24px;
+      text-align: center;
+    }
+    .compare-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    @media (max-width: 640px) {
+      .compare-row { grid-template-columns: 1fr; }
+    }
+    .compare-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      background: #fff;
+    }
+    .compare-card h4 {
+      margin: 0 0 6px;
+      font-size: 15px;
+    }
+    .compare-card p {
+      margin: 0;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="announcement">Free Shipping on Eligible U.S. Orders • 30-Day Returns</div>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="logo" href="/" aria-label="All Star Shady home">
+        <span class="logo-mark">AS</span>
+        <span class="logo-text">All Star Shady</span>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="/collections/all/">Shop</a>
+        <a href="/collections/mens-sunglasses/">Men</a>
+        <a href="/collections/womens-sunglasses/">Women</a>
+        <a href="/collections/unisex-sunglasses/">Unisex</a>
+        <a href="/about-us/">About</a>
+        <a href="/blog/">Journal</a>
+        <a href="/faq/">FAQ</a>
+        <a href="/contact/">Contact</a>
+        <a href="/uv-check/">UV Check</a>
+        <a href="/style-finder/">Frame Finder</a>
+        <a href="/lens-guide/">Lens Guide</a>
+      </nav>
+      <div class="header-actions">
+        <a class="cart-btn" href="/collections/all/">Cart (0)</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="lg-page">
+    <section class="lg-hero">
+      <div class="container">
+        <h1>Lens Color Guide</h1>
+        <p>Choose the right tint for your activity. Click any activity below to see how each lens color transforms what you see — and which pair to shop next.</p>
+      </div>
+    </section>
+
+    <div class="activity-picker" id="activityPicker">
+      <button class="activity-btn active" data-activity="driving">🚗 Driving</button>
+      <button class="activity-btn" data-activity="beach">🏖️ Beach</button>
+      <button class="activity-btn" data-activity="hiking">🥾 Hiking</button>
+      <button class="activity-btn" data-activity="golf">⛳ Golf</button>
+      <button class="activity-btn" data-activity="fashion">✨ Fashion</button>
+      <button class="activity-btn" data-activity="snow">🏔️ Snow</button>
+    </div>
+
+    <div class="demo-wrap">
+      <div class="lens-visual">
+        <img id="demoImage" src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop" alt="Coastal landscape with ocean and sand" style="filter: grayscale(0.2) sepia(0.1) saturate(1.1);">
+        <div class="lens-overlay">
+          <div>
+            <div class="lens-name" id="lensName">Gray</div>
+            <div class="lens-hex" id="lensHex">True color, minimal shift</div>
+          </div>
+        </div>
+      </div>
+      <div class="lens-panel">
+        <span class="tag" id="lensTag">Best for driving</span>
+        <h3 id="lensTitle">Gray — Neutral Truth</h3>
+        <p id="lensDesc">Gray lenses provide the most accurate color perception while reducing overall brightness. They don't alter color balance, making them ideal for situations where true color recognition matters.</p>
+        <ul id="lensBenefits">
+          <li>Excellent color accuracy</li>
+          <li>Reduces fatigue on long drives</li>
+          <li>Works in full sun and overcast</li>
+          <li>Versatile for everyday wear</li>
+        </ul>
+        <a class="btn btn-primary" href="/collections/all/" id="lensShopBtn">Shop gray-lens sunglasses</a>
+      </div>
+    </div>
+
+    <section class="lens-library">
+      <h2>The Lens Library</h2>
+      <p class="sub">Tap any card to preview how it looks in the demo above.</p>
+      <div class="lens-grid" id="lensGrid"></div>
+    </section>
+
+    <section class="comparison-section">
+      <h2>Polarized vs Non-Polarized</h2>
+      <div class="compare-row">
+        <div class="compare-card">
+          <h4>☀️ Polarized</h4>
+          <p>Blocks horizontal glare from water, roads, and snow. Colors are slightly deeper, and detail pops in bright conditions. Great for driving, fishing, and skiing.</p>
+        </div>
+        <div class="compare-card">
+          <h4>🔘 Non-Polarized</h4>
+          <p>Standard UV protection without glare filtering. Colors remain true to life, and lenses are available in every tint. Good for everyday casual wear and indoor-to-outdoor transitions.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="lg-cta">
+      <h2>Find your perfect pair</h2>
+      <p>Every pair at All Star Shady ships free with 30-day returns. Try your recommended lens color risk-free.</p>
+      <a class="btn btn-primary" href="/collections/all/">Browse all sunglasses</a>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-col">
+        <strong>Shop</strong>
+        <a href="/collections/all/">All sunglasses</a>
+        <a href="/collections/mens-sunglasses/">Men</a>
+        <a href="/collections/womens-sunglasses/">Women</a>
+        <a href="/collections/unisex-sunglasses/">Unisex</a>
+      </div>
+      <div class="footer-col">
+        <strong>Tools</strong>
+        <a href="/uv-check/">UV Check</a>
+        <a href="/style-finder/">Frame Finder</a>
+        <a href="/lens-guide/">Lens Guide</a>
+      </div>
+      <div class="footer-col">
+        <strong>Support</strong>
+        <a href="/faq/">FAQ</a>
+        <a href="/contact/">Shipping</a>
+        <a href="/contact/">Returns</a>
+        <a href="/contact/">Contact</a>
+      </div>
+      <div class="footer-col">
+        <strong>Contact</strong>
+        <a href="tel:+150****9578">+1 503 213 9578</a>
+        <a href="mailto:support@allstarshady.com">support@allstarshady.com</a>
+        <p>7337 SE 28th Ave<br>Portland, OR 97202</p>
+      </div>
+    </div>
+    <div class="container legal">
+      <p>© <span id="year"></span> All Star Shady. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    const lensData = {
+      gray: {
+        name: "Gray",
+        hex: "True color, minimal shift",
+        tag: "All-purpose classic",
+        title: "Gray — Neutral Truth",
+        desc: "Gray lenses provide the most accurate color perception while reducing overall brightness. They don't alter color balance, making them ideal for situations where true color recognition matters.",
+        benefits: ["Excellent color accuracy", "Reduces fatigue on long drives", "Works in full sun and overcast", "Versatile for everyday wear"],
+        filter: "grayscale(0.2) sepia(0.1) saturate(1.1) brightness(0.9)",
+        activities: ["driving", "fashion", "snow"],
+        shop: "Shop gray-lens sunglasses",
+        cart: "/collections/all/"
+      },
+      brown: {
+        name: "Brown / Amber",
+        hex: "Warm contrast boost",
+        tag: "High contrast favorite",
+        title: "Brown — Warm Contrast",
+        desc: "Brown and amber tints enhance contrast by blocking blue light. They make greens and browns pop — perfect for seeing trails, grass, and road texture in detail.",
+        benefits: ["Boosts contrast on trails", "Enhances depth perception", "Comfortable in variable light", "Great for fishing & hunting"],
+        filter: "sepia(0.5) saturate(1.4) brightness(0.9) hue-rotate(-10deg)",
+        activities: ["hiking", "driving", "fishing"],
+        shop: "Shop brown-lens sunglasses",
+        cart: "/collections/all/"
+      },
+      green: {
+        name: "Green",
+        hex: "Natural light balance",
+        tag: "Nature lover's pick",
+        title: "Green — Natural Balance",
+        desc: "Green lenses deliver true color perception while reducing glare and eye strain. They're a favorite for golfers and anyone who spends long hours in bright sun.",
+        benefits: ["True-to-life colors", "Reduces glare without distortion", "Comfortable for all-day wear", "Ideal for golf courses"],
+        filter: "sepia(0.25) hue-rotate(70deg) saturate(1.2) brightness(0.9)",
+        activities: ["golf", "hiking", "fashion"],
+        shop: "Shop green-lens sunglasses",
+        cart: "/collections/all/"
+      },
+      rose: {
+        name: "Rose / Pink",
+        hex: "Soft & stylish tint",
+        tag: "Fashion-forward",
+        title: "Rose — Soft & Stylish",
+        desc: "Rose lenses reduce eye strain while adding a warm, flattering tone to everything you see. They're popular in fashion-forward frames and work surprisingly well for winter sports.",
+        benefits: ["Flattering warm tone", "Reduces eye strain", "Popular in fashion frames", "Good for low-contrast days"],
+        filter: "sepia(0.3) hue-rotate(-30deg) saturate(1.3) brightness(0.85) contrast(1.1)",
+        activities: ["fashion", "snow", "driving"],
+        shop: "Shop rose-lens sunglasses",
+        cart: "/collections/all/"
+      },
+      blue: {
+        name: "Blue",
+        hex: "Cool & crisp tint",
+        tag: "Summer & snow standout",
+        title: "Blue — Cool & Crisp",
+        desc: "Blue lenses enhance contours and color separation — especially yellows and greens against water or snow. A favorite for beach days and mountain mornings.",
+        benefits: ["Enhances color separation", "Great on water and snow", "Distinctive summer look", "Reduces glare from white surfaces"],
+        filter: "hue-rotate(180deg) saturate(1.3) brightness(0.9)",
+        activities: ["beach", "snow", "fashion"],
+        shop: "Shop blue-lens sunglasses",
+        cart: "/collections/all/"
+      },
+      yellow: {
+        name: "Yellow / Gold",
+        hex: "Maximum contrast",
+        tag: "Low-light wizard",
+        title: "Yellow — Low-Light Wizard",
+        desc: "Yellow and gold lenses block blue light and dramatically increase contrast in flat or foggy conditions. Popular for pilots, skiers, and anyone driving at dusk.",
+        benefits: ["Increases contrast in fog", "Great for dusk & overcast", "Popular with skiers", "Reduces eye strain from screens"],
+        filter: "sepia(0.7) saturate(1.5) brightness(0.95) contrast(1.1)",
+        activities: ["snow", "driving", "hiking"],
+        shop: "Shop yellow-lens sunglasses",
+        cart: "/collections/all/"
+      },
+      mirrored: {
+        name: "Mirrored",
+        hex: "Ultra glare shield",
+        tag: "High-shine protection",
+        title: "Mirrored — Ultra Glare Shield",
+        desc: "Mirrored coatings reflect light away from your eyes, cutting glare better than almost any tint. The reflection also gives you a sleek, futuristic look. Available in multiple base tints.",
+        benefits: ["Reflects intense glare", "Great for water & snow", "Sleek reflective finish", "Available in multiple colors"],
+        filter: "grayscale(0.3) brightness(0.7) contrast(1.3) saturate(0.8)",
+        activities: ["beach", "snow", "golf"],
+        shop: "Shop mirrored-lens sunglasses",
+        cart: "/collections/all/"
+      }
+    };
+
+    const activityMap = {
+      driving: { title: "For driving, you want clarity and reduced fatigue.", filter: "grayscale(0.15) sepia(0.08) saturate(1.1) brightness(0.92)", primary: ["gray", "brown", "rose"] },
+      beach: { title: "For the beach, you want strong glare protection.", filter: "hue-rotate(170deg) saturate(1.2) brightness(0.88)", primary: ["blue", "mirrored", "gray"] },
+      hiking: { title: "For hiking, contrast and depth perception matter most.", filter: "sepia(0.4) hue-rotate(-10deg) saturate(1.3) brightness(0.9)", primary: ["brown", "green", "yellow"] },
+      golf: { title: "For golf, you need true greens and clear depth cues.", filter: "sepia(0.2) hue-rotate(60deg) saturate(1.2) brightness(0.92)", primary: ["green", "mirrored", "brown"] },
+      fashion: { title: "For fashion, color and mood set the tone.", filter: "sepia(0.35) hue-rotate(-20deg) saturate(1.4) brightness(0.88) contrast(1.05)", primary: ["rose", "blue", "mirrored"] },
+      snow: { title: "For snow, you need maximum glare blocking and contrast.", filter: "sepia(0.6) saturate(1.3) brightness(0.85) contrast(1.15)", primary: ["yellow", "mirrored", "rose"] }
+    };
+
+    const demoImage = document.getElementById("demoImage");
+    const lensName = document.getElementById("lensName");
+    const lensHex = document.getElementById("lensHex");
+    const lensTag = document.getElementById("lensTag");
+    const lensTitle = document.getElementById("lensTitle");
+    const lensDesc = document.getElementById("lensDesc");
+    const lensBenefits = document.getElementById("lensBenefits");
+    const lensShopBtn = document.getElementById("lensShopBtn");
+    const lensGrid = document.getElementById("lensGrid");
+
+    let currentLens = "gray";
+
+    function setLens(key) {
+      currentLens = key;
+      const l = lensData[key];
+      demoImage.style.filter = l.filter;
+      lensName.textContent = l.name;
+      lensHex.textContent = l.hex;
+      lensTag.textContent = l.tag;
+      lensTitle.textContent = l.title;
+      lensDesc.textContent = l.desc;
+      lensBenefits.innerHTML = l.benefits.map(b => `<li>${b}</li>`).join("");
+      lensShopBtn.textContent = l.shop;
+
+      document.querySelectorAll(".lens-card").forEach(c => c.classList.toggle("selected", c.dataset.lens === key));
+    }
+
+    function renderGrid() {
+      lensGrid.innerHTML = Object.entries(lensData).map(([key, l]) => `
+        <div class="lens-card ${key === currentLens ? 'selected' : ''}" data-lens="${key}">
+          <div class="lens-swatch">
+            <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&auto=format&fit=crop" alt="${l.name} tint preview" style="filter: ${l.filter};">
+            <span class="swatch-label">${l.name}</span>
+          </div>
+          <div class="lens-card-body">
+            <h4>${l.name}</h4>
+            <p>${l.hex}</p>
+          </div>
+        </div>
+      `).join("");
+
+      lensGrid.querySelectorAll(".lens-card").forEach(card => {
+        card.addEventListener("click", () => setLens(card.dataset.lens));
+      });
+    }
+
+    document.getElementById("activityPicker").addEventListener("click", (e) => {
+      const btn = e.target.closest(".activity-btn");
+      if (!btn) return;
+      document.querySelectorAll(".activity-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      const act = activityMap[btn.dataset.activity];
+      const top = act.primary[0];
+      setLens(top);
+    });
+
+    renderGrid();
+    setLens("gray");
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
