@@ -20,6 +20,7 @@
     { "source": "/uv-check", "destination": "/uv-check/" },
     { "source": "/style-finder", "destination": "/style-finder/" },
     { "source": "/lens-guide", "destination": "/lens-guide/" },
-    { "source": "/polarization-lab", "destination": "/polarization-lab/" }
+    { "source": "/polarization-lab", "destination": "/polarization-lab/" },
+    { "source": "/color-match", "destination": "/color-match/" }
   ]
 }
