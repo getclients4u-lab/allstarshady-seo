@@ -22,6 +22,7 @@
     { "source": "/lens-guide", "destination": "/lens-guide/" },
     { "source": "/polarization-lab", "destination": "/polarization-lab/" },
     { "source": "/gift-finder", "destination": "/gift-finder/" },
-    { "source": "/color-match", "destination": "/color-match/" }
+    { "source": "/color-match", "destination": "/color-match/" },
+    { "source": "/fit-studio", "destination": "/fit-studio/" }
   ]
 }
