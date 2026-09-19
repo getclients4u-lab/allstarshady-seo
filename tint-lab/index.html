@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lens Tint Lab — See the World Through Any Lens | All Star Shady</title>
+  <meta name="description" content="Preview how amber, gray, green, blue-mirror, rose and yellow lenses change the way you see. Toggle polarization to watch glare disappear — live, in your browser.">
+  <meta property="og:title" content="Lens Tint Lab — See the World Through Any Lens">
+  <meta property="og:description" content="Drag to compare lens tints, toggle polarization, and watch glare vanish. Free shipping, 30-day returns.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://allstarshady.com/tint-lab/">
+  <link rel="canonical" href="https://allstarshady.com/tint-lab/">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .to-page { min-height: calc(100vh - 72px); }
+    .to-hero { text-align: center; padding: 44px 24px 8px; }
+    .to-hero h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 700; margin: 0 0 12px; line-height: 1.15;
+    }
+    .to-hero p { color: var(--muted); font-size: 15px; max-width: 600px; margin: 0 auto; line-height: 1.6; }
+
+    .to-layout {
+      display: grid; gap: 24px; padding: 24px 24px 64px;
+      max-width: 1120px; margin: 0 auto; align-items: start;
+    }
+    @media (min-width: 900px) { .to-layout { grid-template-columns: 1.2fr 1fr; } }
+
+    /* Viewer */
+    .viewer {
+      position: relative; width: 100%;
+      border-radius: 14px; overflow: hidden;
+      background: #0e0e0e; border: 1px solid var(--border);
+      box-shadow: 0 14px 44px var(--shadow); user-select: none;
+    }
+    .viewer canvas { width: 100%; height: auto; display: block; touch-action: none; cursor: ew-resize; }
+    .viewer .vtag {
+      position: absolute; top: 12px; padding: 6px 12px; border-radius: 999px;
+      font-size: 11px; letter-spacing: 0.05em; backdrop-filter: blur(4px); pointer-events: none;
+    }
+    .vtag.left { left: 12px; background: rgba(0,0,0,0.55); color: #fff; }
+    .vtag.right { right: 12px; background: rgba(201,134,42,0.9); color: #fff; }
+
+    /* Scene picker */
+    .scene-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 14px; }
+    .scene-btn {
+      position: relative; border-radius: 10px; overflow: hidden; aspect-ratio: 16/11;
+      border: 2px solid var(--border); cursor: pointer; padding: 0; background: #111;
+      transition: all 0.18s ease;
+    }
+    .scene-btn img { width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0.82; }
+    .scene-btn span {
+      position: absolute; inset: auto 0 0 0; padding: 6px; font-size: 11px; font-weight: 600;
+      color: #fff; background: linear-gradient(transparent, rgba(0,0,0,0.75)); text-align: center;
+    }
+    .scene-btn:hover { border-color: var(--accent); }
+    .scene-btn.active { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(201,134,42,0.2); }
+    .scene-btn.active img { opacity: 1; }
+
+    /* Controls panel */
+    .controls {
+      background: #fff; border: 1px solid var(--border); border-radius: 14px;
+      padding: 24px; box-shadow: 0 8px 30px var(--shadow);
+    }
+    .controls h3 { font-family: 'Playfair Display', Georgia, serif; font-size: 19px; margin: 0 0 4px; }
+    .controls .sub { color: var(--muted); font-size: 13px; margin: 0 0 20px; line-height: 1.5; }
+    .ctl-label {
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em;
+      color: var(--muted); font-weight: 600; margin: 18px 0 8px;
+    }
+    .ctl-label:first-of-type { margin-top: 0; }
+
+    .tint-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .tint-btn {
+      display: flex; flex-direction: column; align-items: center; gap: 7px;
+      padding: 12px 6px; border: 1.5px solid var(--border); border-radius: 10px;
+      background: #fff; cursor: pointer; transition: all 0.2s ease; font-family: 'Inter', sans-serif;
+    }
+    .tint-btn .swatch {
+      width: 40px; height: 40px; border-radius: 50%; border: 2px solid #fff;
+      box-shadow: 0 0 0 1.5px var(--border), inset 0 0 12px rgba(255,255,255,0.35);
+    }
+    .tint-btn span { font-size: 10.5px; font-weight: 600; color: var(--ink); text-align: center; line-height: 1.2; }
+    .tint-btn:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .tint-btn.active { border-color: var(--accent); background: rgba(201,134,42,0.06); box-shadow: 0 0 0 3px rgba(201,134,42,0.12); }
+
+    .best-for {
+      margin-top: 14px; padding: 10px 14px; border-radius: 8px; background: #faf7f2;
+      border: 1px dashed var(--border); font-size: 12.5px; color: var(--ink); line-height: 1.5;
+    }
+    .best-for b { color: var(--accent); }
+
+    .slider { -webkit-appearance: none; width: 100%; height: 5px; border-radius: 4px; background: var(--border); outline: none; margin: 6px 0; }
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
+      background: var(--ink); cursor: pointer; border: 3px solid #fff; box-shadow: 0 0 0 1.5px var(--border);
+    }
+    .slider::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: var(--ink); cursor: pointer; border: 3px solid #fff; }
+
+    /* Polarization toggle */
+    .polar-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px; }
+    .polar-row .lbl { font-size: 13.5px; font-weight: 600; }
+    .polar-row .hint { font-size: 11.5px; color: var(--muted); }
+    .switch { position: relative; width: 54px; height: 30px; flex: 0 0 auto; cursor: pointer; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .switch .track {
+      position: absolute; inset: 0; border-radius: 999px; background: #ddd; transition: background 0.25s ease;
+    }
+    .switch .track::before {
+      content: ''; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%;
+      background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.25); transition: transform 0.25s ease;
+    }
+    .switch input:checked + .track { background: var(--accent); }
+    .switch input:checked + .track::before { transform: translateX(24px); }
+
+    .action-row { display: flex; gap: 10px; margin-top: 22px; flex-wrap: wrap; }
+    .btn-download {
+      flex: 1; min-width: 150px; background: var(--accent); color: #fff; border: none;
+      padding: 13px 16px; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer;
+      font-family: 'Inter', sans-serif; transition: all 0.2s ease;
+    }
+    .btn-download:hover { filter: brightness(0.94); }
+    .btn-reset {
+      padding: 13px 18px; border-radius: 8px; background: #fff; color: var(--muted);
+      border: 1.5px solid var(--border); font-weight: 600; font-size: 14px; cursor: pointer; font-family: 'Inter', sans-serif;
+    }
+    .btn-reset:hover { color: var(--ink); border-color: var(--ink); }
+    .privacy-note { font-size: 11px; color: var(--muted); margin-top: 16px; text-align: center; line-height: 1.5; }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+      background: var(--ink); color: #fff; padding: 12px 22px; border-radius: 999px;
+      font-size: 14px; font-weight: 500; opacity: 0; transition: all 0.35s ease; z-index: 999;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25); pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    .shop-strip { padding: 0 24px 72px; max-width: 1120px; margin: 0 auto; }
+    .shop-strip h2 { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(22px, 3vw, 30px); margin: 0 0 18px; }
+    .shop-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    @media (min-width: 700px) { .shop-grid { grid-template-columns: repeat(4, 1fr); } }
+    .shop-card { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: #fff; text-decoration: none; color: var(--ink); transition: box-shadow 0.2s; }
+    .shop-card:hover { box-shadow: 0 8px 24px var(--shadow); }
+    .shop-card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; }
+    .shop-card .t { padding: 12px 14px; font-size: 13px; font-weight: 600; line-height: 1.35; }
+    .shop-card .p { padding: 0 14px 14px; font-size: 13px; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="announcement">Free Shipping on Eligible U.S. Orders • 30-Day Returns</div>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="logo" href="/" aria-label="All Star Shady home">
+        <span class="logo-mark">AS</span>
+        <span class="logo-text">All Star Shady</span>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="/collections/all/">Shop</a>
+        <a href="/collections/mens-sunglasses/">Men</a>
+        <a href="/collections/womens-sunglasses/">Women</a>
+        <a href="/collections/unisex-sunglasses/">Unisex</a>
+        <a href="/about-us/">About</a>
+        <a href="/blog/">Journal</a>
+        <a href="/faq/">FAQ</a>
+        <a href="/contact/">Contact</a>
+        <a href="/uv-check/">UV Check</a>
+        <a href="/style-finder/">Frame Finder</a>
+        <a href="/try-on/">Try-On</a>
+        <a href="/lens-guide/">Lens Guide</a>
+        <a href="/polarization-lab/">Polarization Lab</a>
+        <a href="/gift-finder/">Gift Finder</a>
+        <a href="/color-match/">Color Match</a>
+        <a href="/fit-studio/">Fit Studio</a>
+        <a href="/tint-lab/" style="color: var(--accent);">Tint Lab</a>
+      </nav>
+      <div class="header-actions">
+        <a class="cart-btn" href="/collections/all/">Cart (0)</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="to-page">
+    <section class="to-hero">
+      <div class="container">
+        <h1>See the world in a new tint</h1>
+        <p>Drag the divider to compare, swap lens tints, and flip polarization on to watch glare melt away. It all runs live in your browser — no uploads, no waiting.</p>
+      </div>
+    </section>
+
+    <div class="to-layout">
+      <!-- Viewer -->
+      <div>
+        <div class="viewer" id="viewer">
+          <canvas id="cv"></canvas>
+          <div class="vtag left">Bare eye</div>
+          <div class="vtag right" id="rightTag">Amber lenses</div>
+        </div>
+        <div class="ctl-label">Scene</div>
+        <div class="scene-row" id="sceneRow"></div>
+      </div>
+
+      <!-- Controls -->
+      <div class="controls">
+        <h3>Tint Lab</h3>
+        <p class="sub">Pick a lens color, dial the intensity, then toggle polarization to see the glare difference.</p>
+
+        <div class="ctl-label">Lens tint</div>
+        <div class="tint-grid" id="tintGrid"></div>
+        <div class="best-for" id="bestFor"></div>
+
+        <div class="ctl-label">Tint intensity</div>
+        <input type="range" class="slider" id="intensity" min="0" max="1.3" step="0.01" value="1">
+
+        <div class="polar-row">
+          <div>
+            <div class="lbl">Polarized</div>
+            <div class="hint" id="polarHint">Off — glare is visible</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="polarToggle">
+            <span class="track"></span>
+          </label>
+        </div>
+
+        <div class="action-row">
+          <button class="btn-download" id="downloadBtn">⬇ Download my view</button>
+          <button class="btn-reset" id="resetBtn">↻ Reset</button>
+        </div>
+        <p class="privacy-note">🔒 100% client-side. Scenes load from a stock photo CDN and are rendered entirely in your own browser.</p>
+      </div>
+    </div>
+
+    <div class="shop-strip">
+      <h2>Shop lenses like the one you're viewing</h2>
+      <div class="shop-grid">
+        <a class="shop-card" href="/products/mens-polarized-aviator-sunglasses-lightweight-metal-frame-uv400-pc-lenses-all-day-comfort-aerolux/">
+          <img src="https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=600&auto=format&fit=crop" alt="Aviator sunglasses">
+          <div class="t">AeroLux Aviator</div><div class="p">$23.96</div>
+        </a>
+        <a class="shop-card" href="/collections/all/">
+          <img src="https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=600&auto=format&fit=crop" alt="Cat-eye sunglasses">
+          <div class="t">Rosevex Cat-Eye</div><div class="p">$22.33</div>
+        </a>
+        <a class="shop-card" href="/collections/all/">
+          <img src="https://images.unsplash.com/photo-1473496169904-658ba7c44d8a?w=600&auto=format&fit=crop" alt="Round sunglasses">
+          <div class="t">Brassvex Round</div><div class="p">From $22.07</div>
+        </a>
+        <a class="shop-card" href="/collections/all/">
+          <img src="https://images.unsplash.com/photo-1577803645773-f96470509666?w=600&auto=format&fit=crop" alt="Sport sunglasses">
+          <div class="t">Altivo Sport</div><div class="p">From $18.15</div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-col">
+        <strong>Shop</strong>
+        <a href="/collections/all/">All sunglasses</a>
+        <a href="/collections/mens-sunglasses/">Men</a>
+        <a href="/collections/womens-sunglasses/">Women</a>
+        <a href="/collections/unisex-sunglasses/">Unisex</a>
+      </div>
+      <div class="footer-col">
+        <strong>Tools</strong>
+        <a href="/tint-lab/">Lens Tint Lab</a>
+        <a href="/try-on/">Virtual Try-On</a>
+        <a href="/style-finder/">Frame Finder</a>
+        <a href="/uv-check/">UV Check</a>
+        <a href="/color-match/">Color Match</a>
+      </div>
+      <div class="footer-col">
+        <strong>Company</strong>
+        <a href="/about-us/">About</a>
+        <a href="/blog/">Journal</a>
+        <a href="/contact/">Contact</a>
+      </div>
+      <div class="footer-col">
+        <strong>Contact</strong>
+        <a href="tel:+150****9578">+1 503 213 9578</a>
+        <a href="mailto:support@allstarshady.com">support@allstarshady.com</a>
+        <p>7337 SE 28th Ave<br>Portland, OR 97202</p>
+      </div>
+    </div>
+    <div class="container legal">
+      <p>© <span id="year"></span> All Star Shady. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast">Looking good! 😎</div>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // ── Tints ────────────────────────────────────────────────────
+    const TINTS = {
+      amber:  { name:'Amber',          color:'#e0861a', mode:'multiply',  alpha:0.40, best:'High contrast &amp; depth — great for driving, overcast days and ball sports.' },
+      gray:   { name:'Gray G-15',      color:'#8a8a8a', mode:'multiply',  alpha:0.36, best:'Neutral, true-to-life color — the everyday all-rounder for bright sun.' },
+      green:  { name:'Green G-15',     color:'#4f7d4f', mode:'multiply',  alpha:0.40, best:'Soft on the eyes with natural color — ideal for golf, tennis and long days out.' },
+      blue:   { name:'Blue Mirror',    color:'#2f6bb0', mode:'overlay',   alpha:0.50, sheen:true, best:'Cool, reflective and stylish — made for the beach, water sports and max glare.' },
+      rose:   { name:'Rose',           color:'#c2507c', mode:'multiply',  alpha:0.38, best:'Boosts depth perception and contrast — a favorite for snow, cycling and low light.' },
+      yellow: { name:'Yellow Night',   color:'#e6c200', mode:'screen',    alpha:0.30, best:'Brightens dim scenes — the pick for night driving, fog and indoor sports.' },
+    };
+    const TINT_ORDER = ['amber','gray','green','blue','rose','yellow'];
+
+    // ── Scenes (Unsplash, CORS-enabled) ─────────────────────────
+    const SCENES = [
+      { id:'beach',   label:'Beach',   url:'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&auto=format&fit=crop' },
+      { id:'mountain',label:'Mountains',url:'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1200&auto=format&fit=crop' },
+      { id:'city',    label:'City',    url:'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=1200&auto=format&fit=crop' },
+      { id:'lake',    label:'Lake',    url:'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1200&auto=format&fit=crop' },
+    ];
+
+    // ── State ────────────────────────────────────────────────────
+    const cv = document.getElementById('cv');
+    const ctx = cv.getContext('2d');
+    const toast = document.getElementById('toast');
+    const bestFor = document.getElementById('bestFor');
+    const rightTag = document.getElementById('rightTag');
+    const polarHint = document.getElementById('polarHint');
+
+    let sceneImg = null;         // loaded scene image
+    let currentTint = 'amber';
+    let intensity = 1;           // multiplier 0..1.3
+    let polarized = false;
+    let divider = 0.5;           // fraction 0..1
+    let dragging = false;
+
+    const glareSpots = [
+      { x:0.28, y:0.24, r:0.20 },
+      { x:0.72, y:0.60, r:0.24 },
+      { x:0.55, y:0.18, r:0.16 },
+    ];
+
+    // ── Build tint buttons ──────────────────────────────────────
+    const tintGrid = document.getElementById('tintGrid');
+    TINT_ORDER.forEach(id => {
+      const t = TINTS[id];
+      const b = document.createElement('button');
+      b.className = 'tint-btn' + (id === currentTint ? ' active' : '');
+      b.dataset.tint = id;
+      b.innerHTML = '<span class="swatch" style="background:' + t.color + '"></span><span>' + t.name + '</span>';
+      b.addEventListener('click', () => {
+        document.querySelectorAll('.tint-btn').forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+        currentTint = id;
+        updateBestFor();
+        rightTag.textContent = TINTS[id].name + ' lenses';
+        render();
+      });
+      tintGrid.appendChild(b);
+    });
+
+    function updateBestFor() {
+      const t = TINTS[currentTint];
+      bestFor.innerHTML = '<b>' + t.name + ':</b> ' + t.best;
+    }
+
+    // ── Build scene buttons ─────────────────────────────────────
+    const sceneRow = document.getElementById('sceneRow');
+    SCENES.forEach((s, i) => {
+      const b = document.createElement('button');
+      b.className = 'scene-btn' + (i === 0 ? ' active' : '');
+      b.dataset.scene = s.id;
+      b.innerHTML = '<img src="' + s.url.replace('w=1200','w=300') + '" alt="' + s.label + ' scene" loading="lazy"><span>' + s.label + '</span>';
+      b.addEventListener('click', () => {
+        document.querySelectorAll('.scene-btn').forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+        loadScene(s);
+      });
+      sceneRow.appendChild(b);
+    });
+
+    function loadScene(scene) {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        sceneImg = img;
+        const maxW = 1400;
+        const w = Math.min(img.naturalWidth || img.width || 1200, maxW);
+        const h = Math.round((img.naturalHeight / img.naturalWidth) * w);
+        cv.width = w; cv.height = h;
+        render();
+      };
+      img.onerror = () => showToast("Couldn't load that scene — try another one.");
+      img.src = scene.url;
+    }
+
+    // ── Painting helpers (target a specific context) ────────────
+    function applyTint(c, w, h) {
+      const t = TINTS[currentTint];
+      const a = t.alpha * intensity;
+      if (a <= 0) return;
+      c.save();
+      c.globalCompositeOperation = t.mode;
+      c.globalAlpha = Math.min(a, 0.95);
+      c.fillStyle = t.color;
+      c.fillRect(0, 0, w, h);
+      if (t.sheen) {
+        c.globalCompositeOperation = 'screen';
+        c.globalAlpha = Math.min(a, 0.95) * 0.5;
+        const g = c.createLinearGradient(0, 0, w, h);
+        g.addColorStop(0, 'rgba(255,255,255,0)');
+        g.addColorStop(0.5, 'rgba(200,220,255,0.7)');
+        g.addColorStop(1, 'rgba(255,255,255,0)');
+        c.fillStyle = g;
+        c.fillRect(0, 0, w, h);
+      }
+      c.restore();
+    }
+
+    function applyGlare(c, w, h) {
+      c.save();
+      c.globalCompositeOperation = 'screen';
+      c.globalAlpha = 0.30;
+      const g = c.createLinearGradient(0, 0, w, h);
+      g.addColorStop(0, 'rgba(255,255,255,0)');
+      g.addColorStop(0.45, 'rgba(255,255,255,0.4)');
+      g.addColorStop(0.55, 'rgba(255,255,255,0.4)');
+      g.addColorStop(1, 'rgba(255,255,255,0)');
+      c.fillStyle = g;
+      c.fillRect(0, 0, w, h);
+      c.globalAlpha = 0.20;
+      glareSpots.forEach(s => {
+        const rg = c.createRadialGradient(s.x*w, s.y*h, 0, s.x*w, s.y*h, s.r*w);
+        rg.addColorStop(0, 'rgba(255,255,255,0.95)');
+        rg.addColorStop(1, 'rgba(255,255,255,0)');
+        c.fillStyle = rg;
+        c.fillRect(0, 0, w, h);
+      });
+      c.restore();
+    }
+
+    function drawTintedInto(c, w, h) {
+      c.drawImage(sceneImg, 0, 0, w, h);
+      applyTint(c, w, h);
+      if (!polarized) applyGlare(c, w, h);
+    }
+
+    // ── Render ───────────────────────────────────────────────────
+    function render() {
+      if (!sceneImg) return;
+      const w = cv.width, h = cv.height;
+      const dx = Math.round(divider * w);
+      ctx.clearRect(0, 0, w, h);
+
+      // left — bare eye
+      ctx.save();
+      ctx.beginPath(); ctx.rect(0, 0, dx, h); ctx.clip();
+      ctx.drawImage(sceneImg, 0, 0, w, h);
+      ctx.restore();
+
+      // right — tinted (+glare unless polarized)
+      ctx.save();
+      ctx.beginPath(); ctx.rect(dx, 0, w - dx, h); ctx.clip();
+      drawTintedInto(ctx, w, h);
+      ctx.restore();
+
+      // divider
+      ctx.save();
+      ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(dx, 0); ctx.lineTo(dx, h); ctx.stroke();
+      ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 8;
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(dx, h / 2, 16, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+
+      // arrows on handle
+      ctx.save();
+      ctx.fillStyle = '#1a1a1a';
+      ctx.font = '700 14px Inter, sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('⟷', dx, h / 2 + 1);
+      ctx.restore();
+    }
+
+    // ── Divider drag ─────────────────────────────────────────────
+    function pointerToFraction(e) {
+      const r = cv.getBoundingClientRect();
+      return Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+    }
+    cv.addEventListener('pointerdown', e => {
+      if (!sceneImg) return;
+      dragging = true;
+      cv.setPointerCapture(e.pointerId);
+      divider = pointerToFraction(e);
+      render();
+    });
+    cv.addEventListener('pointermove', e => {
+      if (!dragging || !sceneImg) return;
+      divider = pointerToFraction(e);
+      render();
+    });
+    function endDrag() { dragging = false; }
+    cv.addEventListener('pointerup', endDrag);
+    cv.addEventListener('pointercancel', endDrag);
+
+    // ── Controls ─────────────────────────────────────────────────
+    document.getElementById('intensity').addEventListener('input', e => {
+      intensity = parseFloat(e.target.value);
+      render();
+    });
+    document.getElementById('polarToggle').addEventListener('change', e => {
+      polarized = e.target.checked;
+      polarHint.textContent = polarized ? 'On — glare removed' : 'Off — glare is visible';
+      render();
+      showToast(polarized ? 'Glare be gone! ✨' : 'Glare is back 🕶️');
+    });
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      currentTint = 'amber';
+      intensity = 1; polarized = false; divider = 0.5;
+      document.getElementById('intensity').value = 1;
+      document.getElementById('polarToggle').checked = false;
+      polarHint.textContent = 'Off — glare is visible';
+      document.querySelectorAll('.tint-btn').forEach(x => x.classList.remove('active'));
+      document.querySelector('.tint-btn[data-tint="amber"]').classList.add('active');
+      updateBestFor();
+      rightTag.textContent = 'Amber lenses';
+      render();
+      showToast('Back to default 🌅');
+    });
+
+    // ── Download ─────────────────────────────────────────────────
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+      if (!sceneImg) { showToast('Pick a scene first! 🏞️'); return; }
+      try {
+        const w = cv.width, h = cv.height;
+        const out = document.createElement('canvas');
+        out.width = w; out.height = h;
+        const octx = out.getContext('2d');
+        drawTintedInto(octx, w, h);
+        const a = document.createElement('a');
+        a.download = 'my-view-' + currentTint + (polarized ? '-polarized' : '') + '.png';
+        a.href = out.toDataURL('image/png');
+        a.click();
+        showToast('Saved your view! 📸');
+      } catch (err) {
+        showToast('Download blocked — try a different browser.');
+      }
+    });
+
+    // ── Toast ─────────────────────────────────────────────────────
+    let toastTimer;
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    // ── Boot ─────────────────────────────────────────────────────
+    updateBestFor();
+    loadScene(SCENES[0]);
+  </script>
+</body>
+</html>
