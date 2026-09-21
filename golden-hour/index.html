@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Golden Hour Finder — Catch the Magic Light | All Star Shady</title>
+  <meta name="description" content="See today's sunrise, sunset, and golden hour for any city — with a live countdown to the next moment of magic light, plus the perfect lens tint for right now.">
+  <meta property="og:title" content="Golden Hour Finder — Catch the Magic Light">
+  <meta property="og:description" content="Live countdown to golden hour, a sun arc that moves with the real time of day, and the perfect lens tint for the light right now.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://allstarshady.com/golden-hour/">
+  <link rel="canonical" href="https://allstarshady.com/golden-hour/">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .gh-page { min-height: calc(100vh - 72px); }
+    .gh-hero { text-align: center; padding: 40px 24px 8px; }
+    .gh-hero h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 700; margin: 0 0 12px; line-height: 1.15;
+    }
+    .gh-hero p { color: var(--muted); font-size: 15px; max-width: 620px; margin: 0 auto; line-height: 1.6; }
+
+    .search-row { display: flex; gap: 10px; flex-wrap: wrap; max-width: 620px; margin: 22px auto 0; justify-content: center; }
+    .search-row input[type="text"] {
+      flex: 1 1 220px; padding: 12px 14px; border: 1px solid var(--border);
+      border-radius: 8px; background: #fff; font: inherit; color: var(--ink);
+    }
+    .search-row input[type="text"]:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(201,134,42,0.12); }
+    .search-row button {
+      padding: 12px 18px; border: none; border-radius: 8px; background: var(--ink);
+      color: #fff; font-weight: 500; cursor: pointer; font: inherit;
+    }
+    .search-row button:hover { background: #333; }
+    .search-row .ghost { background: #fff; color: var(--ink); border: 1px solid var(--border); }
+    .search-row .ghost:hover { border-color: var(--ink); }
+    .loc-note { text-align: center; color: var(--muted); font-size: 12.5px; margin-top: 10px; }
+    .loc-note span { color: var(--ink); font-weight: 600; }
+
+    .gh-layout {
+      display: grid; gap: 24px; padding: 20px 24px 64px;
+      max-width: 1120px; margin: 0 auto; align-items: start;
+    }
+    @media (min-width: 900px) { .gh-layout { grid-template-columns: 1.35fr 1fr; } }
+
+    /* Sky scene */
+    .sky-panel {
+      position: relative; border-radius: 16px; overflow: hidden;
+      border: 1px solid var(--border); box-shadow: 0 14px 44px var(--shadow);
+      background: #0b1026;
+    }
+    .sky-panel svg { display: block; width: 100%; height: auto; }
+    .sky-tag {
+      position: absolute; top: 14px; left: 14px; padding: 7px 13px; border-radius: 999px;
+      font-size: 12px; font-weight: 600; letter-spacing: 0.03em; color: #fff;
+      background: rgba(0,0,0,0.32); backdrop-filter: blur(5px);
+    }
+    .sky-clock {
+      position: absolute; top: 14px; right: 14px; padding: 7px 13px; border-radius: 999px;
+      font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; color: #fff;
+      background: rgba(0,0,0,0.32); backdrop-filter: blur(5px);
+    }
+
+    /* Right column */
+    .gh-side { display: flex; flex-direction: column; gap: 16px; }
+
+    .countdown-card {
+      background: #fff; border: 1px solid var(--border); border-radius: 14px;
+      padding: 22px 24px; box-shadow: 0 8px 30px var(--shadow); text-align: center;
+    }
+    .countdown-card .phase {
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.16em;
+      color: var(--accent); font-weight: 700; margin-bottom: 6px;
+    }
+    .countdown-card .headline {
+      font-family: 'Playfair Display', Georgia, serif; font-size: clamp(20px, 2.6vw, 26px);
+      font-weight: 700; color: var(--ink); margin: 0 0 6px; line-height: 1.2;
+    }
+    .countdown-card .count {
+      font-size: clamp(30px, 4vw, 40px); font-weight: 700; color: var(--ink);
+      font-variant-numeric: tabular-nums; letter-spacing: 0.01em;
+    }
+    .countdown-card .count.glow { color: var(--accent); }
+    .countdown-card .sub { color: var(--muted); font-size: 13px; margin-top: 4px; }
+
+    .times-card {
+      background: #fff; border: 1px solid var(--border); border-radius: 14px;
+      padding: 18px 20px; box-shadow: 0 8px 30px var(--shadow);
+    }
+    .times-card h3 { font-family: 'Playfair Display', Georgia, serif; font-size: 17px; margin: 0 0 12px; color: var(--ink); }
+    .time-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .time-item {
+      display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+      border: 1px solid var(--border); border-radius: 10px; background: #fafaf8;
+    }
+    .time-item .t-emoji { font-size: 18px; }
+    .time-item .t-body { line-height: 1.25; }
+    .time-item .t-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; }
+    .time-item .t-value { font-size: 15px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+    .lens-card {
+      background: #fff; border: 1px solid var(--border); border-radius: 14px;
+      padding: 20px 22px; box-shadow: 0 8px 30px var(--shadow);
+    }
+    .lens-card h3 { font-family: 'Playfair Display', Georgia, serif; font-size: 17px; margin: 0 0 2px; color: var(--ink); }
+    .lens-card .lens-sub { color: var(--muted); font-size: 12.5px; margin: 0 0 14px; }
+    .lens-row { display: flex; align-items: center; gap: 16px; }
+    .lens-swatch {
+      width: 56px; height: 56px; border-radius: 50%; flex: 0 0 auto;
+      box-shadow: 0 0 0 3px #fff, 0 0 0 4.5px var(--border), inset 0 0 18px rgba(255,255,255,0.4);
+    }
+    .lens-info { flex: 1; }
+    .lens-info .l-name { font-weight: 700; font-size: 16px; color: var(--ink); }
+    .lens-info .l-emoji { margin-right: 2px; }
+    .lens-info .l-why { font-size: 13px; color: var(--muted); line-height: 1.5; margin-top: 2px; }
+    .lens-cta {
+      display: inline-block; margin-top: 12px; padding: 10px 18px; border-radius: 8px;
+      background: var(--ink); color: #fff; font-size: 13px; font-weight: 600; text-decoration: none;
+    }
+    .lens-cta:hover { background: #333; }
+
+    .share-row { display: flex; gap: 10px; }
+    .share-row button {
+      flex: 1; padding: 11px; border-radius: 8px; border: 1px solid var(--border);
+      background: #fff; color: var(--ink); font-weight: 600; font-size: 13px; cursor: pointer; font: inherit;
+    }
+    .share-row button:hover { border-color: var(--ink); }
+
+    .error { color: #ef4444; font-size: 13px; text-align: center; margin-top: 10px; }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="announcement">Free Shipping on Eligible U.S. Orders • 30-Day Returns</div>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="logo" href="/" aria-label="All Star Shady home">
+        <span class="logo-mark">AS</span>
+        <span class="logo-text">All Star Shady</span>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="/collections/all/">Shop</a>
+        <a href="/collections/mens-sunglasses/">Men</a>
+        <a href="/collections/womens-sunglasses/">Women</a>
+        <a href="/collections/unisex-sunglasses/">Unisex</a>
+        <a href="/about-us/">About</a>
+        <a href="/blog/">Journal</a>
+        <a href="/faq/">FAQ</a>
+        <a href="/contact/">Contact</a>
+        <a href="/uv-check/">UV Check</a>
+        <a href="/style-finder/">Frame Finder</a>
+        <a href="/try-on/">Try-On</a>
+        <a href="/lens-guide/">Lens Guide</a>
+        <a href="/polarization-lab/">Polarization Lab</a>
+        <a href="/gift-finder/">Gift Finder</a>
+        <a href="/color-match/">Color Match</a>
+        <a href="/fit-studio/">Fit Studio</a>
+        <a href="/tint-lab/">Tint Lab</a>
+        <a href="/golden-hour/" style="color: var(--accent);">Golden Hour</a>
+      </nav>
+      <div class="header-actions">
+        <a class="cart-btn" href="/collections/all/">Cart (0)</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="gh-page">
+    <section class="gh-hero">
+      <div class="container">
+        <h1>Golden Hour Finder</h1>
+        <p>See today's sunrise, sunset, and the two windows of soft "magic light" — with a live countdown, a sun arc that moves with the real time of day, and the perfect lens tint for right now.</p>
+        <div class="search-row">
+          <input type="text" id="cityInput" placeholder="Enter a city (e.g. Portland, OR)" aria-label="City name">
+          <button id="searchBtn">Find</button>
+          <button id="geoBtn" class="ghost" title="Use my location">📍 My Location</button>
+        </div>
+        <p class="loc-note" id="locNote">Loading — defaulting to <span>Portland, OR</span> (our hometown).</p>
+      </div>
+    </section>
+
+    <section class="gh-layout">
+      <div class="sky-panel" id="skyPanel">
+        <svg viewBox="0 0 1000 400" preserveAspectRatio="xMidYMid slice" aria-label="Sun position through the day">
+          <defs>
+            <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" id="stopTop" stop-color="#0b1026"/>
+              <stop offset="52%" id="stopMid" stop-color="#1b2559"/>
+              <stop offset="100%" id="stopBot" stop-color="#2a3566"/>
+            </linearGradient>
+            <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#ffe9b0" stop-opacity="0.95"/>
+              <stop offset="45%" stop-color="#ffd97a" stop-opacity="0.55"/>
+              <stop offset="100%" stop-color="#ffd97a" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <rect id="skyRect" x="0" y="0" width="1000" height="340" fill="url(#skyGrad)"/>
+          <g id="stars"></g>
+          <path d="M 60 340 A 440 220 0 0 1 940 340" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="2" stroke-dasharray="1 9" stroke-linecap="round"/>
+          <rect x="0" y="340" width="1000" height="60" fill="#151515"/>
+          <line x1="0" y1="340" x2="1000" y2="340" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+          <circle id="sunGlowCircle" cx="500" cy="340" r="46" fill="url(#sunGlow)" opacity="0"/>
+          <circle id="sunDisc" cx="500" cy="340" r="20" fill="#ffd97a" opacity="0"/>
+          <g id="arcLabels" fill="rgba(255,255,255,0.82)" font-size="14" font-family="Inter, sans-serif" font-weight="600" text-anchor="middle"></g>
+        </svg>
+        <div class="sky-tag" id="skyTag">Loading…</div>
+        <div class="sky-clock" id="skyClock">--:--</div>
+      </div>
+
+      <div class="gh-side">
+        <div class="countdown-card">
+          <div class="phase" id="phaseLabel">—</div>
+          <div class="headline" id="headline">Finding your light…</div>
+          <div class="count" id="countdown">--:--:--</div>
+          <div class="sub" id="countSub">&nbsp;</div>
+        </div>
+
+        <div class="times-card">
+          <h3>Today's light</h3>
+          <div class="time-grid" id="timeGrid"></div>
+        </div>
+
+        <div class="lens-card">
+          <h3>Lens for right now</h3>
+          <p class="lens-sub">The tint that matches the light outside at this moment.</p>
+          <div class="lens-row">
+            <div class="lens-swatch" id="lensSwatch" style="background:#5b6670;"></div>
+            <div class="lens-info">
+              <div class="l-name" id="lensName">Gray G-15 Polarized</div>
+              <div class="l-why" id="lensWhy">Bright neutral daylight — gray polarized keeps colors true.</div>
+            </div>
+          </div>
+          <a class="lens-cta" id="lensCta" href="/collections/all/">Shop this tint →</a>
+        </div>
+
+        <div class="share-row">
+          <button id="shareBtn">🔗 Share my golden hour</button>
+        </div>
+        <div class="error hidden" id="error"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-col">
+        <strong>Shop</strong>
+        <a href="/collections/all/">All sunglasses</a>
+        <a href="/collections/mens-sunglasses/">Men</a>
+        <a href="/collections/womens-sunglasses/">Women</a>
+        <a href="/collections/unisex-sunglasses/">Unisex</a>
+      </div>
+      <div class="footer-col">
+        <strong>Tools</strong>
+        <a href="/golden-hour/">Golden Hour</a>
+        <a href="/uv-check/">UV Check</a>
+        <a href="/style-finder/">Frame Finder</a>
+        <a href="/try-on/">Try-On</a>
+      </div>
+      <div class="footer-col">
+        <strong>Company</strong>
+        <a href="/about-us/">About</a>
+        <a href="/blog/">Journal</a>
+        <a href="/contact/">Contact</a>
+      </div>
+      <div class="footer-col">
+        <strong>Contact</strong>
+        <a href="tel:+15032139578">+1 503 213 9578</a>
+        <a href="mailto:support@allstarshady.com">support@allstarshady.com</a>
+        <p>7337 SE 28th Ave<br>Portland, OR 97202</p>
+      </div>
+    </div>
+    <div class="container legal">
+      <p>© <span id="year"></span> All Star Shady. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    const $ = (id) => document.getElementById(id);
+
+    // ── Timezone-safe parsing: Open-Meteo returns naive local ISO strings + an IANA tz ──
+    function parseZonedToUTC(localISO, timeZone) {
+      const m = localISO.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
+      if (!m) return null;
+      const Y=+m[1], Mo=+m[2], D=+m[3], H=+m[4], Mi=+m[5];
+      const asUTCGuess = Date.UTC(Y, Mo-1, D, H, Mi);
+      const dt = new Date(asUTCGuess);
+      const parts = new Intl.DateTimeFormat('en-US', { timeZone, hour12:false, year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit' }).formatToParts(dt);
+      const p = {}; parts.forEach(x => p[x.type] = x.value);
+      const hour = p.hour === '24' ? 0 : +p.hour;
+      const asUTC = Date.UTC(+p.year, +p.month-1, +p.day, hour, +p.minute, +(p.second||0));
+      return new Date(asUTCGuess - (asUTC - asUTCGuess));
+    }
+
+    function fmtClock(ms, tz) {
+      return new Intl.DateTimeFormat('en-US', { timeZone: tz, hour:'numeric', minute:'2-digit' }).format(new Date(ms));
+    }
+
+    // ── Light phases & their look ──
+    const PHASES = {
+      night:        { label: 'Night', sky: ['#0b1026','#1b2559','#2a3566'], stars: 1, lens: { emoji:'🌙', name:'Yellow Night Lenses', tint:'#f0cf4b', why:'Boost contrast after dark — great for driving at dusk.', link:'/collections/unisex-sunglasses/' } },
+      dawn:         { label: 'Dawn · Blue Hour', sky: ['#2c3e6b','#8e6a9c','#f0a468'], stars: 0.7, lens: { emoji:'🌅', name:'Rose / Gradient Tint', tint:'#e8a0b4', why:'Soft, cool-blue transition light — a rose or gradient tint flatters it.', link:'/collections/womens-sunglasses/' } },
+      morningGolden:{ label: 'Morning Golden Hour', sky: ['#3a5a8c','#f3a64e','#ffd08a'], stars: 0, lens: { emoji:'✨', name:'Amber Tint', tint:'#e09a3e', why:'Golden light loves amber lenses — they deepen warmth and cut haze.', link:'/collections/all/' } },
+      morning:      { label: 'Morning Light', sky: ['#4a90d9','#8ec5f5','#d6ecff'], stars: 0, lens: { emoji:'☀️', name:'Gray G-15 Polarized', tint:'#5b6670', why:'Bright, clean morning light — gray polarized keeps colors true.', link:'/products/mens-polarized-aviator-sunglasses-lightweight-metal-frame-uv400-pc-lenses-all-day-comfort-aerolux/' } },
+      midday:       { label: 'Midday Sun', sky: ['#2b7fd4','#5aa7ee','#cfe6fb'], stars: 0, lens: { emoji:'☀️', name:'Dark Polarized', tint:'#33383d', why:'Harshest light of the day — max polarization to cut glare.', link:'/products/unisex-polarized-sunglasses-lightweight-frame-uv400-lenses-sport-driving-ready-altivo' } },
+      afternoon:    { label: 'Afternoon Light', sky: ['#3f7fc9','#8fc3f0','#eed9a8'], stars: 0, lens: { emoji:'🌤️', name:'Green G-15', tint:'#4c6e5a', why:'Warm afternoon light — green lenses keep things crisp and calm.', link:'/collections/unisex-sunglasses/' } },
+      eveningGolden:{ label: 'Evening Golden Hour', sky: ['#5a4a8c','#f0844b','#ffb347'], stars: 0, lens: { emoji:'✨', name:'Amber Tint', tint:'#e09a3e', why:'The best light of the day — amber lenses make it glow even harder.', link:'/collections/all/' } },
+      dusk:         { label: 'Dusk · Blue Hour', sky: ['#2c3e6b','#7b5b9c','#e2735a'], stars: 0.7, lens: { emoji:'🌆', name:'Rose / Gradient Tint', tint:'#e8a0b4', why:'Purple-pink evening light — a rose tint leans into the mood.', link:'/collections/womens-sunglasses/' } },
+    };
+
+    let state = null; // { city, tz, sunrise, sunset, sunriseNext }
+    let timer = null;
+
+    // ── Fetch location + sun times ──
+    async function geocode(city) {
+      const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`;
+      const r = await fetch(url);
+      const data = await r.json();
+      if (!data.results || !data.results.length) throw new Error('City not found');
+      const res = data.results[0];
+      return { lat: res.latitude, lng: res.longitude, name: res.name + (res.admin1 ? ', ' + res.admin1 : '') };
+    }
+
+    async function fetchSun(lat, lng) {
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&daily=sunrise,sunset&forecast_days=2&timezone=auto`;
+      const r = await fetch(url);
+      const data = await r.json();
+      if (!data.daily || !data.daily.sunrise || !data.daily.sunrise.length) throw new Error('Sun data not available');
+      return { tz: data.timezone, sunrise: data.daily.sunrise[0], sunset: data.daily.sunset[0], sunriseNext: data.daily.sunrise[1] };
+    }
+
+    // ── Determine phase from instant ──
+    function resolvePhase(now, s) {
+      const sr = s.sunrise, ss = s.sunset;
+      const M = 60 * 60000;
+      const dawn = sr - (40 * 60000);
+      const duskEnd = ss + (40 * 60000);
+      const noon = (sr + ss) / 2;
+      if (now < dawn) return { key: 'night', next: sr, nextLabel: 'Sunrise' };
+      if (now < sr) return { key: 'dawn', next: sr, nextLabel: 'Sunrise' };
+      if (now < sr + M) return { key: 'morningGolden', next: sr + M, nextLabel: 'Golden hour ends' };
+      if (now < ss - M) {
+        if (now < noon) return { key: 'morning', next: ss - M, nextLabel: 'Golden hour begins' };
+        const midAfternoon = noon + (ss - M - noon) / 2;
+        if (now < midAfternoon) return { key: 'midday', next: ss - M, nextLabel: 'Golden hour begins' };
+        return { key: 'afternoon', next: ss - M, nextLabel: 'Golden hour begins' };
+      }
+      if (now < ss) return { key: 'eveningGolden', next: ss, nextLabel: 'Sunset' };
+      if (now < duskEnd) return { key: 'dusk', next: s.sunriseNext, nextLabel: 'Next sunrise' };
+      return { key: 'night', next: s.sunriseNext, nextLabel: 'Next sunrise' };
+    }
+
+    function sunFraction(now, s) {
+      if (now < s.sunrise || now > s.sunset) return null;
+      return (now - s.sunrise) / (s.sunset - s.sunrise);
+    }
+
+    function sunXY(f) {
+      const theta = Math.PI * f;
+      const cx = 500 - 440 * Math.cos(theta);
+      const cy = 340 - 220 * Math.sin(theta);
+      return { cx, cy };
+    }
+
+    // ── Render ──
+    function render() {
+      if (!state) return;
+      const now = Date.now();
+      const s = state;
+      const phase = resolvePhase(now, s);
+      const info = PHASES[phase.key];
+
+      // Sky gradient
+      $('stopTop').setAttribute('stop-color', info.sky[0]);
+      $('stopMid').setAttribute('stop-color', info.sky[1]);
+      $('stopBot').setAttribute('stop-color', info.sky[2]);
+
+      // Stars
+      const starsG = $('stars');
+      if (info.stars > 0 && !starsG.childElementCount) {
+        for (let i = 0; i < 70; i++) {
+          const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          c.setAttribute('cx', Math.random() * 1000);
+          c.setAttribute('cy', Math.random() * 300);
+          c.setAttribute('r', (Math.random() * 1.4 + 0.4).toFixed(2));
+          c.setAttribute('fill', '#fff');
+          starsG.appendChild(c);
+        }
+      }
+      starsG.setAttribute('opacity', info.stars);
+
+      // Sun
+      const f = sunFraction(now, s);
+      const sunDisc = $('sunDisc'), sunGlowC = $('sunGlowCircle');
+      if (f === null) {
+        sunDisc.setAttribute('opacity', 0);
+        sunGlowC.setAttribute('opacity', 0);
+      } else {
+        const { cx, cy } = sunXY(f);
+        sunDisc.setAttribute('cx', cx); sunDisc.setAttribute('cy', cy);
+        sunGlowC.setAttribute('cx', cx); sunGlowC.setAttribute('cy', cy);
+        sunDisc.setAttribute('opacity', 1);
+        sunGlowC.setAttribute('opacity', 1);
+        const nearHorizon = f < 0.18 || f > 0.82;
+        sunDisc.setAttribute('fill', nearHorizon ? '#ff9a3d' : '#ffd97a');
+      }
+
+      // Arc labels (build once)
+      const labelsG = $('arcLabels');
+      if (!labelsG.childElementCount) {
+        const items = [['Dawn', 0.0], ['Sunrise', 0.0], ['Noon', 0.5], ['Sunset', 1.0], ['Dusk', 1.0]];
+        // draw simple ticks: sunrise(left), noon(center), sunset(right) plus golden markers
+        const ticks = [
+          { t: 'Sunrise', f: 0 },
+          { t: 'Golden', f: 0.14 },
+          { t: 'Noon', f: 0.5 },
+          { t: 'Golden', f: 0.86 },
+          { t: 'Sunset', f: 1 },
+        ];
+        ticks.forEach(tk => {
+          const x = 500 - 440 * Math.cos(Math.PI * tk.f);
+          const y = 340 - 220 * Math.sin(Math.PI * tk.f);
+          const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          txt.setAttribute('x', x);
+          txt.setAttribute('y', y - 14);
+          txt.textContent = tk.t;
+          labelsG.appendChild(txt);
+        });
+      }
+
+      // Tags + clock
+      $('skyTag').textContent = info.label;
+      $('skyClock').textContent = fmtClock(now, s.tz);
+
+      // Countdown
+      const diff = phase.next - now;
+      const isNow = phase.key === 'morningGolden' || phase.key === 'eveningGolden';
+      $('phaseLabel').textContent = info.label + ' · ' + s.city;
+      if (diff <= 0) {
+        $('headline').textContent = '✨ Golden hour is now';
+        $('countdown').textContent = 'Right now';
+        $('countdown').classList.add('glow');
+        $('countSub').textContent = 'Step outside — this is the light you want.';
+      } else {
+        $('headline').textContent = phase.nextLabel + ' in';
+        $('countdown').textContent = fmtDuration(diff);
+        $('countdown').classList.remove('glow');
+        $('countSub').textContent = isNow ? '' : 'at ' + fmtClock(phase.next, s.tz);
+      }
+
+      // Lens
+      $('lensSwatch').style.background = info.lens.tint;
+      $('lensName').textContent = info.lens.name;
+      $('lensWhy').textContent = info.lens.why;
+      $('lensCta').setAttribute('href', info.lens.link);
+    }
+
+    function fmtDuration(ms) {
+      let sec = Math.max(0, Math.floor(ms / 1000));
+      const h = Math.floor(sec / 3600); sec -= h * 3600;
+      const m = Math.floor(sec / 60); sec -= m * 60;
+      const pad = n => String(n).padStart(2, '0');
+      return `${pad(h)}:${pad(m)}:${pad(sec)}`;
+    }
+
+    function renderTimes() {
+      const s = state;
+      const M = 60 * 60000;
+      const items = [
+        { e: '🌅', l: 'Sunrise', v: fmtClock(s.sunrise, s.tz) },
+        { e: '✨', l: 'Morning golden', v: fmtClock(s.sunrise, s.tz) },
+        { e: '🌇', l: 'Sunset', v: fmtClock(s.sunset, s.tz) },
+        { e: '✨', l: 'Evening golden', v: fmtClock(s.sunset - M, s.tz) },
+        { e: '⏱', l: 'Day length', v: fmtDuration(s.sunset - s.sunrise).replace(/:\d\d$/, '').replace(':', 'h ') + 'm' },
+      ];
+      $('timeGrid').innerHTML = items.map(i => `
+        <div class="time-item">
+          <div class="t-emoji">${i.e}</div>
+          <div class="t-body"><div class="t-label">${i.l}</div><div class="t-value">${i.v}</div></div>
+        </div>`).join('');
+    }
+
+    async function load(cityName, useMyLocation) {
+      $('error').classList.add('hidden');
+      try {
+        let geo;
+        if (useMyLocation) {
+          const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, { timeout: 8000 }));
+          geo = { lat: pos.coords.latitude, lng: pos.coords.longitude, name: 'Your location' };
+        } else {
+          geo = await geocode(cityName);
+        }
+        const sun = await fetchSun(geo.lat, geo.lng);
+        state = {
+          city: geo.name,
+          tz: sun.tz,
+          sunrise: parseZonedToUTC(sun.sunrise, sun.tz).getTime(),
+          sunset: parseZonedToUTC(sun.sunset, sun.tz).getTime(),
+          sunriseNext: parseZonedToUTC(sun.sunriseNext, sun.tz).getTime(),
+        };
+        $('locNote').innerHTML = `Showing <span>${geo.name}</span> · local time shown.`;
+        renderTimes();
+        render();
+        if (timer) clearInterval(timer);
+        timer = setInterval(render, 1000);
+      } catch (err) {
+        $('error').textContent = (err && err.message) ? err.message : 'Something went wrong. Please try again.';
+        $('error').classList.remove('hidden');
+      }
+    }
+
+    // Share
+    $('shareBtn').addEventListener('click', async () => {
+      if (!state) return;
+      const s = state;
+      const golden = fmtClock(s.sunset - 60*60000, s.tz);
+      const text = `☀️ Golden hour in ${s.city} today is ${golden}. What's yours? (via All Star Shady)`;
+      if (navigator.share) {
+        try { await navigator.share({ title: 'Golden Hour Finder', text, url: 'https://allstarshady.com/golden-hour/' }); return; } catch (e) {}
+      }
+      try { await navigator.clipboard.writeText(text); $('shareBtn').textContent = '✅ Copied!'; }
+      catch (e) { $('shareBtn').textContent = 'Could not copy'; }
+      setTimeout(() => { $('shareBtn').textContent = '🔗 Share my golden hour'; }, 2000);
+    });
+
+    $('searchBtn').addEventListener('click', () => {
+      const c = $('cityInput').value.trim();
+      if (c) load(c, false);
+    });
+    $('cityInput').addEventListener('keydown', e => { if (e.key === 'Enter') { const c = $('cityInput').value.trim(); if (c) load(c, false); } });
+    $('geoBtn').addEventListener('click', () => load(null, true));
+
+    // Boot with Portland (brand hometown) so the page feels alive instantly
+    load('Portland, OR', false);
+  </script>
+</body>
+</html>
