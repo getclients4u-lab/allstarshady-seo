@@ -471,9 +471,9 @@
       const M = 60 * 60000;
       const items = [
         { e: '🌅', l: 'Sunrise', v: fmtClock(s.sunrise, s.tz) },
-        { e: '✨', l: 'Morning golden', v: fmtClock(s.sunrise, s.tz) },
+        { e: '✨', l: 'Morning golden', v: fmtClock(s.sunrise, s.tz) + ' – ' + fmtClock(s.sunrise + M, s.tz) },
         { e: '🌇', l: 'Sunset', v: fmtClock(s.sunset, s.tz) },
-        { e: '✨', l: 'Evening golden', v: fmtClock(s.sunset - M, s.tz) },
+        { e: '✨', l: 'Evening golden', v: fmtClock(s.sunset - M, s.tz) + ' – ' + fmtClock(s.sunset, s.tz) },
         { e: '⏱', l: 'Day length', v: fmtDuration(s.sunset - s.sunrise).replace(/:\d\d$/, '').replace(':', 'h ') + 'm' },
       ];
       $('timeGrid').innerHTML = items.map(i => `
