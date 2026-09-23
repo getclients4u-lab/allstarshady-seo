@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Lookbook — Six Ways to Wear Your Shades This Season | All Star Shady</title>
+  <meta name="description" content="Six curated looks for the season — from coastal drives to rooftop golden hours — each paired with the perfect All Star Shady frame. Find your vibe and shop the look.">
+  <meta property="og:title" content="The Lookbook — Six Ways to Wear Your Shades This Season">
+  <meta property="og:description" content="Coastal drives, rooftop golden hours, Sunday strolls. Six curated looks, each paired with the perfect frame. Find your vibe.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://allstarshady.com/lookbook/">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://allstarshady.com/lookbook/">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    /* ---------- Lookbook page ---------- */
+    .lb-hero {
+      position: relative;
+      min-height: 66vh;
+      display: flex;
+      align-items: flex-end;
+      background: url("https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=1600&auto=format&fit=crop&q=80") center 32%/cover no-repeat;
+    }
+    .lb-hero::before {
+      content: "";
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(10,10,10,0.35) 0%, rgba(10,10,10,0.15) 45%, rgba(10,10,10,0.82) 100%);
+    }
+    .lb-hero-inner {
+      position: relative; z-index: 2; width: 100%;
+      padding: 72px 24px 56px; color: #fff;
+    }
+    .lb-eyebrow {
+      font-size: 12px; letter-spacing: 0.24em; text-transform: uppercase;
+      color: #f0c987; font-weight: 600; margin-bottom: 12px;
+    }
+    .lb-hero h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(40px, 8vw, 88px); line-height: 1.02;
+      margin: 0 0 18px; font-weight: 700; letter-spacing: -0.02em;
+    }
+    .lb-hero p {
+      font-size: clamp(15px, 2vw, 18px); color: #e8e2d8; max-width: 560px; margin: 0 0 26px;
+    }
+    .lb-hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+    .lb-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 13px 22px; border-radius: 999px; font-weight: 600; font-size: 14px;
+      border: none; cursor: pointer; text-decoration: none; transition: transform .15s, box-shadow .15s;
+    }
+    .lb-btn:active { transform: translateY(1px); }
+    .lb-btn-gold { background: #fff; color: #1a1a1a; }
+    .lb-btn-gold:hover { box-shadow: 0 8px 28px rgba(0,0,0,0.35); }
+    .lb-btn-ghost { background: rgba(255,255,255,0.14); color: #fff; border: 1px solid rgba(255,255,255,0.4); backdrop-filter: blur(4px); }
+    .lb-btn-ghost:hover { background: rgba(255,255,255,0.22); }
+
+    /* Today's vibe banner */
+    .lb-vibe {
+      background: var(--ink); color: #fff;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .lb-vibe-inner {
+      max-width: 1400px; margin: 0 auto; padding: 18px 24px;
+      display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    }
+    .lb-vibe-label {
+      font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); font-weight: 700;
+      white-space: nowrap;
+    }
+    .lb-vibe-text { font-family: 'Playfair Display', Georgia, serif; font-size: 20px; font-weight: 600; flex: 1; min-width: 200px; }
+    .lb-vibe-text small { display: block; font-family: 'Inter', sans-serif; font-size: 13px; color: #b5b0a8; font-weight: 400; margin-top: 2px; }
+    .lb-vibe-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .lb-vibe-shop { color: #fff; font-size: 13px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; align-self: center; }
+    .lb-vibe-shop:hover { color: #f0c987; }
+    .lb-share-btn {
+      background: transparent; border: 1px solid rgba(255,255,255,0.35); color: #fff;
+      padding: 8px 14px; border-radius: 999px; font-size: 13px; cursor: pointer; font-weight: 500;
+    }
+    .lb-share-btn:hover { border-color: #fff; }
+
+    /* Look grid */
+    .lb-section { padding: 56px 24px 72px; max-width: 1400px; margin: 0 auto; }
+    .lb-section-head { margin-bottom: 28px; }
+    .lb-section-head h2 {
+      font-family: 'Playfair Display', Georgia, serif; font-size: clamp(24px, 4vw, 34px); margin: 0 0 8px;
+    }
+    .lb-section-head p { color: var(--muted); margin: 0; font-size: 15px; }
+
+    .lb-grid { display: grid; gap: 20px; grid-template-columns: 1fr; }
+    @media (min-width: 700px) { .lb-grid { grid-template-columns: 1fr 1fr; } }
+
+    .lb-card {
+      position: relative; border-radius: 16px; overflow: hidden; border: 1px solid var(--border);
+      background: #111; aspect-ratio: 4 / 5; cursor: pointer;
+      transition: box-shadow .25s, transform .25s;
+    }
+    .lb-card:hover { box-shadow: 0 24px 60px rgba(0,0,0,0.28); transform: translateY(-3px); }
+    .lb-card img {
+      position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+      transition: transform .6s cubic-bezier(.2,.7,.2,1);
+    }
+    .lb-card:hover img { transform: scale(1.05); }
+    .lb-card::after {
+      content: ""; position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(10,10,10,0) 30%, rgba(10,10,10,0.88) 100%);
+    }
+    .lb-content { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; padding: 24px; color: #fff; }
+    .lb-num { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: #f0c987; font-weight: 700; }
+    .lb-content h3 { font-family: 'Playfair Display', Georgia, serif; font-size: 26px; margin: 8px 0 6px; font-weight: 700; line-height: 1.1; }
+    .lb-line { font-size: 14px; color: #ddd7cc; margin: 0 0 16px; }
+    .lb-frames { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .lb-frame {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 12px; font-weight: 600; padding: 6px 11px; border-radius: 999px;
+      background: rgba(255,255,255,0.16); backdrop-filter: blur(4px); color: #fff;
+    }
+    .lb-swatch { width: 13px; height: 13px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.45); }
+    .lb-shop {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: #fff; font-size: 13px; font-weight: 600; text-decoration: none;
+      border-bottom: 1px solid rgba(255,255,255,0.4); padding-bottom: 2px;
+    }
+    .lb-shop:hover { color: #f0c987; border-color: #f0c987; }
+
+    /* Scroll reveal */
+    .lb-reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+    .lb-reveal.in { opacity: 1; transform: translateY(0); }
+
+    /* Highlight (surprise me) */
+    .lb-card.lb-highlight { animation: lbPulse 1.6s ease-in-out 2; }
+    @keyframes lbPulse {
+      0% { box-shadow: 0 0 0 0 rgba(240,201,135,0); }
+      30% { box-shadow: 0 0 0 6px rgba(240,201,135,0.7), 0 24px 60px rgba(0,0,0,0.3); }
+      100% { box-shadow: 0 0 0 0 rgba(240,201,135,0); }
+    }
+
+    .lb-confetti { position: fixed; z-index: 999; pointer-events: none; font-size: 22px; animation: lbFall 1.1s ease-in forwards; }
+    @keyframes lbFall {
+      0% { opacity: 1; transform: translateY(0) rotate(0deg); }
+      100% { opacity: 0; transform: translateY(70px) rotate(180deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="announcement">Free Shipping on Eligible U.S. Orders • 30-Day Returns</div>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="logo" href="/" aria-label="All Star Shady home">
+        <span class="logo-mark">AS</span>
+        <span class="logo-text">All Star Shady</span>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="/collections/all/">Shop</a>
+        <a href="/collections/mens-sunglasses/">Men</a>
+        <a href="/collections/womens-sunglasses/">Women</a>
+        <a href="/collections/unisex-sunglasses/">Unisex</a>
+        <a href="/lookbook/">Lookbook</a>
+        <a href="/about-us/">About</a>
+        <a href="/blog/">Journal</a>
+        <a href="/faq/">FAQ</a>
+        <a href="/uv-check/">UV Check</a>
+        <a href="/style-finder/">Frame Finder</a>
+        <a href="/try-on/">Try-On</a>
+        <a href="/tint-lab/">Tint Lab</a>
+        <a href="/golden-hour/">Golden Hour</a>
+      </nav>
+      <div class="header-actions">
+        <a class="cart-btn" href="/collections/all/">Cart (0)</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="lb-hero">
+      <div class="lb-hero-inner container">
+        <div class="lb-eyebrow">Summer 2026 · Editorial</div>
+        <h1>The Lookbook</h1>
+        <p>Six ways to wear your shades this season — from salty coastal drives to rooftop golden hours. Every look paired with the perfect frame.</p>
+        <div class="lb-hero-actions">
+          <button class="lb-btn lb-btn-gold" id="surpriseBtn">✨ Surprise me</button>
+          <a class="lb-btn lb-btn-ghost" href="/collections/all/">Shop all shades</a>
+        </div>
+      </div>
+    </section>
+
+    <div class="lb-vibe" id="vibeBanner">
+      <div class="lb-vibe-inner">
+        <span class="lb-vibe-label">Today's vibe</span>
+        <div class="lb-vibe-text" id="vibeText">
+          Coastal Drive
+          <small>Salt air, open road, and a mirror finish.</small>
+        </div>
+        <div class="lb-vibe-actions">
+          <a class="lb-vibe-shop" id="vibeShop" href="/collections/mens-sunglasses/">Shop this look</a>
+          <button class="lb-share-btn" id="shareBtn">🔗 Share my vibe</button>
+        </div>
+      </div>
+    </div>
+
+    <section class="lb-section">
+      <div class="lb-section-head">
+        <h2>The looks</h2>
+        <p>Tap a look to shop its frames. Press "Surprise me" for today's pick.</p>
+      </div>
+      <div class="lb-grid">
+
+        <article class="lb-card lb-reveal" id="look-coastal-drive" data-vibe="Coastal Drive" data-emoji="🌊" data-line="Salt air, open road, and a mirror finish." data-href="/collections/mens-sunglasses/">
+          <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=900&auto=format&fit=crop&q=80" alt="Man in a coastal aviator look" loading="lazy">
+          <div class="lb-content">
+            <span class="lb-num">01</span>
+            <h3>Coastal Drive</h3>
+            <p class="lb-line">Salt air, open road, and a mirror finish.</p>
+            <div class="lb-frames"><span class="lb-frame"><span class="lb-swatch" style="background:#d4af37"></span>Aviator · Gold</span></div>
+            <a class="lb-shop" href="/collections/mens-sunglasses/">Shop this look →</a>
+          </div>
+        </article>
+
+        <article class="lb-card lb-reveal" id="look-rooftop-golden-hour" data-vibe="Rooftop Golden Hour" data-emoji="🌆" data-line="City lights are softer at dusk." data-href="/collections/womens-sunglasses/">
+          <img src="https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=900&auto=format&fit=crop&q=80" alt="Woman in a cat-eye rooftop look" loading="lazy">
+          <div class="lb-content">
+            <span class="lb-num">02</span>
+            <h3>Rooftop Golden Hour</h3>
+            <p class="lb-line">City lights are softer at dusk.</p>
+            <div class="lb-frames"><span class="lb-frame"><span class="lb-swatch" style="background:#6d2e3f"></span>Cat-Eye · Burgundy</span></div>
+            <a class="lb-shop" href="/collections/womens-sunglasses/">Shop this look →</a>
+          </div>
+        </article>
+
+        <article class="lb-card lb-reveal" id="look-round-revival" data-vibe="The Round Revival" data-emoji="🎞️" data-line="Vintage soul, modern lens." data-href="/collections/unisex-sunglasses/">
+          <img src="https://images.unsplash.com/photo-1473496169904-658ba7c44d8a?w=900&auto=format&fit=crop&q=80" alt="Person in round vintage sunglasses" loading="lazy">
+          <div class="lb-content">
+            <span class="lb-num">03</span>
+            <h3>The Round Revival</h3>
+            <p class="lb-line">Vintage soul, modern lens.</p>
+            <div class="lb-frames"><span class="lb-frame"><span class="lb-swatch" style="background:#b87333"></span>Round · Copper</span></div>
+            <a class="lb-shop" href="/collections/unisex-sunglasses/">Shop this look →</a>
+          </div>
+        </article>
+
+        <article class="lb-card lb-reveal" id="look-sunday-stroll" data-vibe="Sunday Stroll" data-emoji="🍂" data-line="Big frames, small worries." data-href="/collections/womens-sunglasses/">
+          <img src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=900&auto=format&fit=crop&q=80" alt="Woman in oversized sunglasses" loading="lazy">
+          <div class="lb-content">
+            <span class="lb-num">04</span>
+            <h3>Sunday Stroll</h3>
+            <p class="lb-line">Big frames, small worries.</p>
+            <div class="lb-frames"><span class="lb-frame"><span class="lb-swatch" style="background:#5a3a22"></span>Oversize · Tortoise</span></div>
+            <a class="lb-shop" href="/collections/womens-sunglasses/">Shop this look →</a>
+          </div>
+        </article>
+
+        <article class="lb-card lb-reveal" id="look-street-smart" data-vibe="Street Smart" data-emoji="🏙️" data-line="The shape that started it all." data-href="/collections/all/">
+          <img src="https://images.unsplash.com/photo-1577803645773-f96470509666?w=900&auto=format&fit=crop&q=80" alt="Wayfarer sunglasses laid flat" loading="lazy">
+          <div class="lb-content">
+            <span class="lb-num">05</span>
+            <h3>Street Smart</h3>
+            <p class="lb-line">The shape that started it all.</p>
+            <div class="lb-frames"><span class="lb-frame"><span class="lb-swatch" style="background:#1a1a1a"></span>Wayfarer · Black</span></div>
+            <a class="lb-shop" href="/collections/all/">Shop this look →</a>
+          </div>
+        </article>
+
+        <article class="lb-card lb-reveal" id="look-golden-hour-glow" data-vibe="Golden Hour Glow" data-emoji="✨" data-line="Catch the light, keep the mystery." data-href="/collections/all/">
+          <img src="https://images.unsplash.com/photo-1495105787522-5334e3ffa0ef?w=900&auto=format&fit=crop&q=80" alt="Woman in mirrored sunglasses" loading="lazy">
+          <div class="lb-content">
+            <span class="lb-num">06</span>
+            <h3>Golden Hour Glow</h3>
+            <p class="lb-line">Catch the light, keep the mystery.</p>
+            <div class="lb-frames"><span class="lb-frame"><span class="lb-swatch" style="background:#2d6a9f"></span>Mirror · Blue</span></div>
+            <a class="lb-shop" href="/collections/all/">Shop this look →</a>
+          </div>
+        </article>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-col">
+        <strong>Shop</strong>
+        <a href="/collections/all/">All sunglasses</a>
+        <a href="/collections/mens-sunglasses/">Men</a>
+        <a href="/collections/womens-sunglasses/">Women</a>
+        <a href="/collections/unisex-sunglasses/">Unisex</a>
+      </div>
+      <div class="footer-col">
+        <strong>Tools</strong>
+        <a href="/lookbook/">Lookbook</a>
+        <a href="/golden-hour/">Golden Hour</a>
+        <a href="/uv-check/">UV Check</a>
+        <a href="/style-finder/">Frame Finder</a>
+        <a href="/try-on/">Try-On</a>
+      </div>
+      <div class="footer-col">
+        <strong>Company</strong>
+        <a href="/about-us/">About</a>
+        <a href="/blog/">Journal</a>
+        <a href="/contact/">Contact</a>
+      </div>
+      <div class="footer-col">
+        <strong>Contact</strong>
+        <a href="tel:+150****9578">+1 503 213 9578</a>
+        <a href="mailto:support@allstarshady.com">support@allstarshady.com</a>
+        <p>7337 SE 28th Ave<br>Portland, OR 97202</p>
+      </div>
+    </div>
+    <div class="container legal">
+      <p>© <span id="year"></span> All Star Shady. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    const $ = (id) => document.getElementById(id);
+
+    const cards = Array.from(document.querySelectorAll('.lb-card'));
+    let lastPick = -1;
+
+    function pickLook() {
+      let i;
+      do { i = Math.floor(Math.random() * cards.length); } while (i === lastPick && cards.length > 1);
+      lastPick = i;
+      return cards[i];
+    }
+
+    function setVibe(card) {
+      const vibe = card.dataset.vibe;
+      const emoji = card.dataset.emoji;
+      const line = card.dataset.line;
+      $('vibeText').innerHTML = `${emoji} ${vibe} <small>${line}</small>`;
+      $('vibeShop').setAttribute('href', card.dataset.href);
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      card.classList.remove('lb-highlight');
+      void card.offsetWidth; // restart animation
+      card.classList.add('lb-highlight');
+      spawnConfetti(card);
+    }
+
+    function spawnConfetti(card) {
+      const r = card.getBoundingClientRect();
+      const emojis = ['🕶️', '✨', '🌟', '😎'];
+      for (let k = 0; k < 12; k++) {
+        const el = document.createElement('span');
+        el.className = 'lb-confetti';
+        el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        el.style.left = (r.left + r.width * (0.15 + Math.random() * 0.7)) + 'px';
+        el.style.top = (r.top + r.height * 0.5) + 'px';
+        el.style.animationDelay = (Math.random() * 0.25) + 's';
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 1400);
+      }
+    }
+
+    $('surpriseBtn').addEventListener('click', () => setVibe(pickLook()));
+
+    cards.forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('a')) return; // let the shop link work
+        setVibe(card);
+      });
+    });
+
+    $('shareBtn').addEventListener('click', async () => {
+      const vibe = $('vibeText').textContent.trim().split('\n')[0].replace(/[^\w\s\-\u{1F300}-\u{1FAFF}]/gu, ' ').trim();
+      const text = `My shades vibe today: ${vibe} — find yours in the All Star Shady Lookbook.`;
+      const url = 'https://allstarshady.com/lookbook/';
+      if (navigator.share) {
+        try { await navigator.share({ title: 'The All Star Shady Lookbook', text, url }); return; } catch (e) {}
+      }
+      try { await navigator.clipboard.writeText(text + ' ' + url); $('shareBtn').textContent = '✅ Copied!'; }
+      catch (e) { $('shareBtn').textContent = 'Copy failed'; }
+      setTimeout(() => { $('shareBtn').textContent = '🔗 Share my vibe'; }, 2000);
+    });
+
+    // Scroll reveal
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.lb-reveal').forEach(el => io.observe(el));
+
+    // Pick today's vibe on load so the page feels alive
+    setTimeout(() => setVibe(pickLook()), 400);
+  </script>
+</body>
+</html>
