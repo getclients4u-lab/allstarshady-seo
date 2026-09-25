@@ -27,6 +27,7 @@
     { "source": "/fit-studio", "destination": "/fit-studio/" },
     { "source": "/tint-lab", "destination": "/tint-lab/" },
     { "source": "/golden-hour", "destination": "/golden-hour/" },
-    { "source": "/lookbook", "destination": "/lookbook/" }
+    { "source": "/lookbook", "destination": "/lookbook/" },
+    { "source": "/glare-blocker", "destination": "/glare-blocker/" }
   ]
 }

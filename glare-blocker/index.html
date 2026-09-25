@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Glare Blocker — The Polarized Reflex Game | All Star Shady</title>
+  <meta name="description" content="How fast can you block the sun? Tap the glare before it blinds you in this 30-second polarized-lens reflex game. Chase a high score and learn why polarized lenses kill glare.">
+  <meta property="og:title" content="Glare Blocker — The Polarized Reflex Game">
+  <meta property="og:description" content="A 30-second reflex game: tap the sun glare before it blinds you. Chase a high score and see why polarized lenses win.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://allstarshady.com/glare-blocker/">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://allstarshady.com/glare-blocker/">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    /* ---------- Glare Blocker page ---------- */
+    .gb-hero { text-align: center; padding: 44px 24px 20px; }
+    .gb-eyebrow {
+      font-size: 12px; letter-spacing: 0.24em; text-transform: uppercase;
+      color: var(--accent); font-weight: 600; margin-bottom: 12px;
+    }
+    .gb-hero h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(30px, 5vw, 52px); line-height: 1.08;
+      margin: 0 0 14px; font-weight: 700; letter-spacing: -0.02em;
+    }
+    .gb-hero p { color: var(--muted); max-width: 600px; margin: 0 auto; font-size: 16px; line-height: 1.6; }
+    .gb-hero .gb-tagline { color: var(--ink); font-weight: 600; margin-top: 10px; }
+
+    .gb-wrap { max-width: 980px; margin: 0 auto; padding: 8px 24px 20px; }
+
+    /* Arena */
+    .gb-arena {
+      position: relative;
+      height: min(62vh, 560px);
+      min-height: 430px;
+      border-radius: 18px;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(10,12,16,0.30) 0%, rgba(10,12,16,0.05) 32%, rgba(10,12,16,0.12) 100%),
+        url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=1600&auto=format&fit=crop&q=80") center 40%/cover no-repeat;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.28), 0 0 0 1px rgba(0,0,0,0.06);
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+      cursor: crosshair;
+    }
+
+    /* HUD */
+    .gb-hud {
+      position: absolute; top: 0; left: 0; right: 0; z-index: 6;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 18px; pointer-events: none;
+      background: linear-gradient(180deg, rgba(10,12,16,0.55), rgba(10,12,16,0));
+    }
+    .gb-hud-item {
+      display: flex; flex-direction: column; align-items: center; gap: 1px;
+      color: #fff; text-shadow: 0 1px 6px rgba(0,0,0,0.5);
+    }
+    .gb-hud-label { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; opacity: 0.82; }
+    .gb-hud-value { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; }
+    .gb-score { font-size: 30px !important; }
+    .gb-combo { color: #ffd98a; }
+    .gb-lives { display: flex; gap: 3px; font-size: 17px; line-height: 1; }
+    .gb-lives span { transition: opacity .25s, filter .25s; }
+    .gb-lives span.dead { opacity: 0.28; filter: grayscale(1); }
+
+    .gb-timer-wrap { position: absolute; left: 0; right: 0; bottom: 0; height: 5px; z-index: 6; background: rgba(255,255,255,0.16); }
+    .gb-timer-bar { height: 100%; background: linear-gradient(90deg, #ffd98a, #ffb347); transform-origin: left; transition: transform 1s linear, background .3s; }
+    .gb-timer-bar.low { background: linear-gradient(90deg, #ff7a6b, #ff4d4d); }
+
+    /* Glare bloom */
+    .gb-glare {
+      position: absolute; z-index: 5;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      cursor: crosshair;
+      -webkit-tap-highlight-color: transparent;
+      will-change: transform, opacity;
+    }
+    .gb-glare .core {
+      position: absolute; inset: 0; border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.98) 0%, rgba(255,250,232,0.86) 22%, rgba(255,224,158,0.42) 52%, rgba(255,224,158,0) 74%);
+      box-shadow: 0 0 34px 12px rgba(255,235,190,0.55);
+    }
+    .gb-glare .streak {
+      position: absolute; left: 50%; top: 50%; height: 3px; border-radius: 999px;
+      transform: translate(-50%, -50%);
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.9) 40%, rgba(255,255,255,0.95) 60%, transparent);
+      box-shadow: 0 0 14px 3px rgba(255,240,205,0.6);
+    }
+    .gb-glare .streak.v { width: 2.5px; height: 60%; background: linear-gradient(180deg, transparent, rgba(255,255,255,0.75) 45%, rgba(255,255,255,0.85) 55%, transparent); box-shadow: 0 0 10px 2px rgba(255,240,205,0.5); }
+    .gb-glare.pop-in { animation: gbPop .28s cubic-bezier(.2,1.4,.4,1) both; }
+    @keyframes gbPop { from { opacity: 0; transform: translate(-50%,-50%) scale(.15); } to { opacity: 1; transform: translate(-50%,-50%) scale(1); } }
+
+    .gb-glare.blocked { animation: gbBlock .32s ease-out forwards; pointer-events: none; }
+    @keyframes gbBlock {
+      0% { opacity: 1; transform: translate(-50%,-50%) scale(1); filter: none; }
+      55% { opacity: .9; transform: translate(-50%,-50%) scale(1.15); }
+      100% { opacity: 0; transform: translate(-50%,-50%) scaleY(.04) scaleX(1.5); filter: brightness(2); }
+    }
+    .gb-glare.missed { animation: gbMiss .35s ease-in forwards; pointer-events: none; }
+    @keyframes gbMiss {
+      0% { opacity: 1; transform: translate(-50%,-50%) scale(1); filter: none; }
+      100% { opacity: 0; transform: translate(-50%,-50%) scale(1.7); filter: blur(6px) brightness(2.4); }
+    }
+
+    .gb-floater {
+      position: absolute; z-index: 7; pointer-events: none;
+      font-weight: 800; font-size: 18px; color: #fff;
+      text-shadow: 0 1px 8px rgba(0,0,0,0.55);
+      transform: translate(-50%, -50%);
+      animation: gbFloat .75s ease-out forwards;
+    }
+    .gb-floater.neg { color: #ffd7d2; }
+    @keyframes gbFloat { from { opacity: 1; transform: translate(-50%,-50%); } to { opacity: 0; transform: translate(-50%,-170%); } }
+
+    /* Overlays */
+    .gb-overlay {
+      position: absolute; inset: 0; z-index: 8;
+      display: flex; align-items: center; justify-content: center; text-align: center;
+      padding: 24px; color: #fff;
+      background: radial-gradient(120% 120% at 50% 0%, rgba(16,20,28,0.55), rgba(10,12,16,0.82));
+      backdrop-filter: blur(3px);
+    }
+    .gb-overlay.hidden { display: none; }
+    .gb-panel { max-width: 460px; width: 100%; }
+    .gb-panel h2 {
+      font-family: 'Playfair Display', Georgia, serif; font-size: clamp(26px, 5vw, 38px);
+      margin: 0 0 10px; font-weight: 700; line-height: 1.1;
+    }
+    .gb-panel p { color: #e6e0d5; font-size: 15px; line-height: 1.55; margin: 0 0 18px; }
+    .gb-rules { text-align: left; margin: 0 auto 20px; max-width: 360px; }
+    .gb-rules li { margin: 6px 0; font-size: 14px; color: #f0eadf; }
+    .gb-rules b { color: #ffd98a; }
+    .gb-btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 14px 26px; border-radius: 999px; font-weight: 700; font-size: 15px;
+      border: none; cursor: pointer; text-decoration: none; transition: transform .15s, box-shadow .15s, background .15s;
+    }
+    .gb-btn:active { transform: translateY(1px); }
+    .gb-btn-gold { background: linear-gradient(135deg, #ffd98a, #f0a13a); color: #1a1a1a; }
+    .gb-btn-gold:hover { box-shadow: 0 10px 30px rgba(240,161,58,0.5); }
+    .gb-btn-ghost { background: rgba(255,255,255,0.14); color: #fff; border: 1px solid rgba(255,255,255,0.35); }
+    .gb-btn-ghost:hover { background: rgba(255,255,255,0.24); }
+    .gb-btn-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+    .gb-best { margin-top: 14px; font-size: 13px; color: #d9c9a4; letter-spacing: 0.04em; }
+    .gb-best b { color: #ffd98a; }
+    .gb-rank { font-size: 20px; font-weight: 700; color: #ffd98a; margin: 4px 0 2px; }
+    .gb-stats { display: flex; gap: 22px; justify-content: center; margin: 10px 0 18px; }
+    .gb-stat { text-align: center; }
+    .gb-stat .n { font-size: 26px; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .gb-stat .l { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.75; }
+
+    /* Mute */
+    .gb-mute {
+      position: absolute; top: 14px; right: 14px; z-index: 9;
+      background: rgba(0,0,0,0.35); color: #fff; border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 999px; width: 38px; height: 38px; font-size: 16px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: background .15s;
+    }
+    .gb-mute:hover { background: rgba(0,0,0,0.55); }
+
+    /* Confetti */
+    .gb-confetti {
+      position: absolute; top: -12px; z-index: 10; pointer-events: none;
+      width: 9px; height: 14px; border-radius: 2px;
+      animation: gbConf 2.6s ease-in forwards;
+    }
+    @keyframes gbConf {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(560px) rotate(720deg); opacity: 0; }
+    }
+
+    /* Content section */
+    .gb-why { max-width: 980px; margin: 46px auto 60px; padding: 0 24px; }
+    .gb-why h2 { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(22px, 3.4vw, 30px); margin: 0 0 8px; }
+    .gb-why .sub { color: var(--muted); margin: 0 0 26px; max-width: 620px; line-height: 1.6; }
+    .gb-why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 18px; }
+    .gb-why-card { border: 1px solid var(--border); border-radius: 14px; padding: 22px; background: #fff; box-shadow: 0 6px 24px var(--shadow); }
+    .gb-why-card .ico { font-size: 26px; margin-bottom: 8px; }
+    .gb-why-card h3 { font-size: 16px; margin: 0 0 8px; }
+    .gb-why-card p { color: var(--muted); font-size: 14px; line-height: 1.6; margin: 0; }
+    .gb-cta { text-align: center; margin-top: 30px; }
+
+    @media (max-width: 640px) {
+      .gb-hud { padding: 10px 12px; }
+      .gb-hud-value { font-size: 18px; }
+      .gb-score { font-size: 24px !important; }
+      .gb-lives { font-size: 14px; }
+      .gb-arena { height: 68vh; min-height: 400px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="announcement">Free Shipping on Eligible U.S. Orders • 30-Day Returns</div>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="logo" href="/" aria-label="All Star Shady home">
+        <span class="logo-mark">AS</span>
+        <span class="logo-text">All Star Shady</span>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="/collections/all/">Shop</a>
+        <a href="/collections/mens-sunglasses/">Men</a>
+        <a href="/collections/womens-sunglasses/">Women</a>
+        <a href="/collections/unisex-sunglasses/">Unisex</a>
+        <a href="/lookbook/">Lookbook</a>
+        <a href="/about-us/">About</a>
+        <a href="/blog/">Journal</a>
+        <a href="/faq/">FAQ</a>
+        <a href="/contact/">Contact</a>
+        <a href="/uv-check/">UV Check</a>
+        <a href="/style-finder/">Frame Finder</a>
+        <a href="/try-on/">Try-On</a>
+        <a href="/lens-guide/">Lens Guide</a>
+        <a href="/polarization-lab/">Polarization Lab</a>
+        <a href="/gift-finder/">Gift Finder</a>
+        <a href="/color-match/">Color Match</a>
+        <a href="/fit-studio/">Fit Studio</a>
+        <a href="/tint-lab/">Tint Lab</a>
+        <a href="/golden-hour/">Golden Hour</a>
+        <a href="/glare-blocker/" aria-current="page">Glare Blocker</a>
+      </nav>
+      <div class="header-actions">
+        <a class="cart-btn" href="/collections/all/">Cart (0)</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="gb-hero">
+      <div class="gb-eyebrow">Polarized Reflex Game · 30 Seconds</div>
+      <h1>Glare Blocker</h1>
+      <p>Sun in your eyes, no shades on hand. Glare blooms are popping up everywhere — tap them to snap on your polarized lenses before they blind you.</p>
+      <p class="gb-tagline">How fast are your shades? 🕶️</p>
+    </section>
+
+    <div class="gb-wrap">
+      <div class="gb-arena" id="arena">
+        <div class="gb-hud">
+          <div class="gb-hud-item">
+            <span class="gb-hud-label">Score</span>
+            <span class="gb-hud-value gb-score" id="hudScore">0</span>
+          </div>
+          <div class="gb-hud-item">
+            <span class="gb-hud-label">Combo</span>
+            <span class="gb-hud-value gb-combo" id="hudCombo">×1</span>
+          </div>
+          <div class="gb-hud-item">
+            <span class="gb-hud-label">Lenses</span>
+            <span class="gb-lives" id="hudLives"><span>🕶️</span><span>🕶️</span><span>🕶️</span></span>
+          </div>
+          <div class="gb-hud-item">
+            <span class="gb-hud-label">Time</span>
+            <span class="gb-hud-value" id="hudTime">30</span>
+          </div>
+        </div>
+        <div class="gb-timer-wrap"><div class="gb-timer-bar" id="timerBar"></div></div>
+
+        <button class="gb-mute" id="muteBtn" aria-label="Toggle sound" title="Toggle sound">🔊</button>
+
+        <!-- Start overlay -->
+        <div class="gb-overlay" id="startOverlay">
+          <div class="gb-panel">
+            <h2>Ready to block?</h2>
+            <p>A 30-second shift on a sun-drenched road. Every glare you block builds your combo — miss one and you lose a lens.</p>
+            <ul class="gb-rules">
+              <li><b>Tap a glare</b> to block it before it fades</li>
+              <li><b>Chain blocks</b> to stack a combo multiplier</li>
+              <li><b>3 lenses</b> — miss three times and the sun wins</li>
+            </ul>
+            <div class="gb-btn-row">
+              <button class="gb-btn gb-btn-gold" id="startBtn">▶ Start</button>
+            </div>
+            <div class="gb-best" id="startBest"></div>
+          </div>
+        </div>
+
+        <!-- Game over overlay -->
+        <div class="gb-overlay hidden" id="overOverlay">
+          <div class="gb-panel">
+            <h2 id="overTitle">Sun's Out!</h2>
+            <div class="gb-rank" id="overRank"></div>
+            <div class="gb-stats">
+              <div class="gb-stat"><div class="n" id="overScore">0</div><div class="l">Score</div></div>
+              <div class="gb-stat"><div class="n" id="overBest">0</div><div class="l">Best</div></div>
+              <div class="gb-stat"><div class="n" id="overAcc">0%</div><div class="l">Blocked</div></div>
+            </div>
+            <div class="gb-btn-row">
+              <button class="gb-btn gb-btn-gold" id="againBtn">↻ Play again</button>
+              <button class="gb-btn gb-btn-ghost" id="shareBtn">🔗 Share score</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section class="gb-why">
+      <h2>Why polarized lenses win</h2>
+      <p class="sub">Glare Blocker is a game — but the problem is real. Polarized lenses are the reason the sun stops winning, on the road, the water, and everywhere else light bounces.</p>
+      <div class="gb-why-grid">
+        <div class="gb-why-card">
+          <div class="ico">🛣️</div>
+          <h3>Kills blinding glare</h3>
+          <p>Polarized lenses filter the horizontal light that bounces off roads, water, and windshields — the exact glare that makes you squint and strain.</p>
+        </div>
+        <div class="gb-why-card">
+          <div class="ico">👀</div>
+          <h3>Sharper, truer color</h3>
+          <p>By stripping scattered light, polarized lenses let you see richer, more accurate color — no more washed-out, hazy views.</p>
+        </div>
+        <div class="gb-why-card">
+          <div class="ico">😎</div>
+          <h3>Less eye fatigue</h3>
+          <p>Fewer squint-inducing reflections means your eyes work less. Longer drives and brighter days feel easier.</p>
+        </div>
+      </div>
+      <div class="gb-cta">
+        <a class="gb-btn gb-btn-gold" href="/collections/all/">Shop polarized shades</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-col">
+        <strong>Shop</strong>
+        <a href="/collections/all/">All sunglasses</a>
+        <a href="/collections/mens-sunglasses/">Men</a>
+        <a href="/collections/womens-sunglasses/">Women</a>
+        <a href="/collections/unisex-sunglasses/">Unisex</a>
+      </div>
+      <div class="footer-col">
+        <strong>Tools</strong>
+        <a href="/lookbook/">Lookbook</a>
+        <a href="/golden-hour/">Golden Hour</a>
+        <a href="/glare-blocker/">Glare Blocker</a>
+        <a href="/uv-check/">UV Check</a>
+        <a href="/style-finder/">Frame Finder</a>
+        <a href="/try-on/">Try-On</a>
+      </div>
+      <div class="footer-col">
+        <strong>Company</strong>
+        <a href="/about-us/">About</a>
+        <a href="/blog/">Journal</a>
+        <a href="/contact/">Contact</a>
+      </div>
+      <div class="footer-col">
+        <strong>Contact</strong>
+        <a href="tel:+15032139578">+1 503 213 9578</a>
+        <a href="mailto:support@allstarshady.com">support@allstarshady.com</a>
+        <p>7337 SE 28th Ave<br>Portland, OR 97202</p>
+      </div>
+    </div>
+    <div class="container legal">
+      <p>© <span id="year"></span> All Star Shady. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    const $ = (id) => document.getElementById(id);
+
+    const arena = $('arena');
+    const startOverlay = $('startOverlay');
+    const overOverlay = $('overOverlay');
+    const hudScore = $('hudScore');
+    const hudCombo = $('hudCombo');
+    const hudLives = $('hudLives');
+    const hudTime = $('hudTime');
+    const timerBar = $('timerBar');
+    const startBest = $('startBest');
+
+    const ROUND_SECONDS = 30;
+    const MAX_LIVES = 3;
+    const BEST_KEY = 'glare-blocker-best';
+    const MUTE_KEY = 'glare-blocker-muted';
+
+    let running = false;
+    let score = 0, combo = 1, lives = MAX_LIVES;
+    let timeLeft = ROUND_SECONDS, elapsed = 0;
+    let totalSpawned = 0, totalBlocked = 0;
+    let spawnTimer = null, tickTimer = null;
+    let lastScore = 0;
+
+    const best = parseInt(localStorage.getItem(BEST_KEY) || '0', 10);
+    let muted = localStorage.getItem(MUTE_KEY) === '1';
+    if (best > 0) startBest.innerHTML = 'Personal best: <b>' + best + '</b>';
+
+    /* ---------- Audio ---------- */
+    let audioCtx = null;
+    function ensureAudio() {
+      if (audioCtx) return;
+      try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {}
+    }
+    function tone(freq, dur, type, vol) {
+      if (muted || !audioCtx) return;
+      try {
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.type = type || 'sine';
+        o.frequency.value = freq;
+        g.gain.setValueAtTime(vol || 0.12, audioCtx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur);
+        o.connect(g); g.connect(audioCtx.destination);
+        o.start(); o.stop(audioCtx.currentTime + dur);
+      } catch (e) {}
+    }
+    const sfxHit = () => { tone(720, 0.09, 'triangle', 0.10); tone(1080, 0.07, 'sine', 0.05); };
+    const sfxCombo = (n) => { tone(880 + n * 40, 0.12, 'triangle', 0.09); };
+    const sfxMiss = () => { tone(180, 0.22, 'sawtooth', 0.09); };
+    const sfxOver = () => { tone(520, 0.16, 'triangle', 0.10); setTimeout(() => tone(392, 0.2, 'triangle', 0.10), 140); };
+
+    function setMute(v) {
+      muted = v;
+      localStorage.setItem(MUTE_KEY, v ? '1' : '0');
+      $('muteBtn').textContent = v ? '🔇' : '🔊';
+    }
+    $('muteBtn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      ensureAudio();
+      setMute(!muted);
+    });
+
+    /* ---------- HUD ---------- */
+    function renderHUD() {
+      hudScore.textContent = score;
+      hudCombo.textContent = '×' + combo;
+      hudTime.textContent = timeLeft;
+      const lis = hudLives.querySelectorAll('span');
+      lis.forEach((s, i) => s.classList.toggle('dead', i >= lives));
+      const frac = timeLeft / ROUND_SECONDS;
+      timerBar.style.transform = 'scaleX(' + frac + ')';
+      timerBar.classList.toggle('low', timeLeft <= 5);
+    }
+
+    /* ---------- Floater ---------- */
+    function floater(x, y, text, neg) {
+      const el = document.createElement('div');
+      el.className = 'gb-floater' + (neg ? ' neg' : '');
+      el.textContent = text;
+      el.style.left = x + 'px';
+      el.style.top = y + 'px';
+      arena.appendChild(el);
+      setTimeout(() => el.remove(), 780);
+    }
+
+    /* ---------- Glare ---------- */
+    function spawnGlare() {
+      if (!running) return;
+      totalSpawned++;
+      const pad = 46;
+      const aw = arena.clientWidth, ah = arena.clientHeight;
+      const size = 88 + Math.random() * 56; // 88-144px
+      const x = pad + Math.random() * (aw - pad * 2);
+      const y = pad + Math.random() * (ah - pad * 2);
+
+      const el = document.createElement('div');
+      el.className = 'gb-glare pop-in';
+      el.style.left = x + 'px';
+      el.style.top = y + 'px';
+      el.style.width = size + 'px';
+      el.style.height = size + 'px';
+
+      const core = document.createElement('div'); core.className = 'core'; el.appendChild(core);
+      const streak = document.createElement('div'); streak.className = 'streak';
+      streak.style.width = (size * 2.1) + 'px'; el.appendChild(streak);
+      const v = document.createElement('div'); v.className = 'streak v';
+      v.style.height = (size * 1.1) + 'px'; el.appendChild(v);
+
+      let resolved = false;
+      const progress = elapsed / ROUND_SECONDS;
+      const lifetime = Math.round(1500 - progress * 520); // 1500 -> 980ms
+
+      const missTimer = setTimeout(() => resolve(false), lifetime);
+      el.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        resolve(true);
+      });
+
+      function resolve(blocked) {
+        if (resolved) return;
+        resolved = true;
+        clearTimeout(missTimer);
+        if (blocked) {
+          totalBlocked++;
+          const pts = 10 * combo;
+          score += pts;
+          combo++;
+          el.classList.remove('pop-in');
+          el.classList.add('blocked');
+          floater(x, y - 8, '+' + pts);
+          if (combo > 1 && combo % 5 === 1) sfxCombo(combo); else sfxHit();
+        } else {
+          el.classList.remove('pop-in');
+          el.classList.add('missed');
+          combo = 1;
+          lives--;
+          floater(x, y - 8, 'blinded!', true);
+          sfxMiss();
+        }
+        renderHUD();
+        setTimeout(() => el.remove(), 400);
+        if (lives <= 0) endRound();
+      }
+
+      arena.appendChild(el);
+    }
+
+    function spawnInterval() {
+      const progress = elapsed / ROUND_SECONDS;
+      return Math.round(1150 - progress * 610); // 1150 -> 540ms
+    }
+
+    function scheduleSpawn() {
+      if (!running) return;
+      spawnTimer = setTimeout(() => { spawnGlare(); scheduleSpawn(); }, spawnInterval());
+    }
+
+    /* ---------- Round lifecycle ---------- */
+    function startRound() {
+      ensureAudio();
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+      score = 0; combo = 1; lives = MAX_LIVES; elapsed = 0;
+      timeLeft = ROUND_SECONDS; totalSpawned = 0; totalBlocked = 0;
+      running = true;
+      startOverlay.classList.add('hidden');
+      overOverlay.classList.add('hidden');
+      renderHUD();
+      scheduleSpawn();
+      tickTimer = setInterval(() => {
+        timeLeft--;
+        elapsed += 1;
+        renderHUD();
+        if (timeLeft <= 0) endRound();
+      }, 1000);
+    }
+
+    function endRound() {
+      if (!running) return;
+      running = false;
+      clearTimeout(spawnTimer);
+      clearInterval(tickTimer);
+      // clear remaining glares
+      arena.querySelectorAll('.gb-glare').forEach((g) => g.remove());
+      arena.querySelectorAll('.gb-floater').forEach((f) => f.remove());
+
+      const acc = totalSpawned ? Math.round((totalBlocked / totalSpawned) * 100) : 0;
+      const isNewBest = score > best;
+      if (isNewBest) localStorage.setItem(BEST_KEY, String(score));
+      lastScore = score;
+
+      $('overScore').textContent = score;
+      $('overBest').textContent = isNewBest ? score : best;
+      $('overAcc').textContent = acc + '%';
+      $('overTitle').textContent = lives <= 0 ? 'The sun won this round' : 'Time!';
+      $('overRank').textContent = rankFor(score);
+      $('startBest').innerHTML = 'Personal best: <b>' + (isNewBest ? score : best) + '</b>';
+      sfxOver();
+      if (isNewBest && score > 0) confetti();
+      overOverlay.classList.remove('hidden');
+      renderHUD();
+    }
+
+    function rankFor(s) {
+      if (s >= 500) return '☀️ Glare Terminator';
+      if (s >= 350) return '🕶️ Polarized Pro';
+      if (s >= 200) return '😎 Glare Wrangler';
+      if (s >= 100) return '🌤️ Shade Apprentice';
+      return '😑 Certified Squinter';
+    }
+
+    function confetti() {
+      const colors = ['#ffd98a', '#ffb347', '#2d6a9f', '#ffffff', '#f0a13a', '#7fd0ff'];
+      for (let i = 0; i < 70; i++) {
+        const c = document.createElement('div');
+        c.className = 'gb-confetti';
+        c.style.left = (Math.random() * 100) + '%';
+        c.style.background = colors[Math.floor(Math.random() * colors.length)];
+        c.style.animationDelay = (Math.random() * 0.5) + 's';
+        c.style.animationDuration = (2 + Math.random() * 1.2) + 's';
+        c.style.transform = 'rotate(' + (Math.random() * 360) + 'deg)';
+        arena.appendChild(c);
+        setTimeout(() => c.remove(), 3800);
+      }
+    }
+
+    /* ---------- Share ---------- */
+    $('shareBtn').addEventListener('click', () => {
+      const text = 'I scored ' + lastScore + ' in Glare Blocker 🕶️ — ' + rankFor(lastScore) + '. Can you beat it? https://allstarshady.com/glare-blocker/';
+      if (navigator.share) {
+        navigator.share({ title: 'Glare Blocker', text }).catch(() => {});
+      } else if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(() => {
+          $('shareBtn').textContent = '✅ Copied!';
+          setTimeout(() => ($('shareBtn').textContent = '🔗 Share score'), 1500);
+        });
+      }
+    });
+
+    $('startBtn').addEventListener('click', startRound);
+    $('againBtn').addEventListener('click', startRound);
+    setMute(muted);
+    renderHUD();
+  </script>
+</body>
+</html>
